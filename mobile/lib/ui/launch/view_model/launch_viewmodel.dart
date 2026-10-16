@@ -3,7 +3,7 @@ import '../../../utils/command.dart';
 import '../../../utils/result.dart';
 
 /// Restores the session while the splash shows. The router's redirect then
-/// picks home or sign in.
+/// picks chats or sign in.
 class LaunchViewModel {
   LaunchViewModel({required AuthRepository authRepository})
     : _authRepository = authRepository {

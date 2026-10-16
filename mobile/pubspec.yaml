@@ -24,6 +24,9 @@ flutter:
   assets:
     - assets/images/splash.png
     - assets/images/otter_peek.png
+    - assets/images/portrait_mina.png
+    - assets/images/portrait_kai.png
+    - assets/images/portrait_sol.png
   fonts:
     - family: Nunito
       fonts:

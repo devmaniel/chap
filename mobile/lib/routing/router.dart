@@ -6,8 +6,8 @@ import '../ui/auth/view_model/sign_in_viewmodel.dart';
 import '../ui/auth/view_model/sign_up_viewmodel.dart';
 import '../ui/auth/widgets/sign_in_screen.dart';
 import '../ui/auth/widgets/sign_up_screen.dart';
-import '../ui/home/view_model/home_viewmodel.dart';
-import '../ui/home/widgets/home_screen.dart';
+import '../ui/chats/view_model/chats_viewmodel.dart';
+import '../ui/chats/widgets/chats_screen.dart';
 import '../ui/launch/view_model/launch_viewmodel.dart';
 import '../ui/launch/widgets/launch_screen.dart';
 import 'routes.dart';
@@ -40,9 +40,10 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
       ),
     ),
     GoRoute(
-      path: Routes.home,
-      builder: (context, state) =>
-          HomeScreen(viewModel: HomeViewModel(authRepository: context.read())),
+      path: Routes.chats,
+      builder: (context, state) => ChatsScreen(
+        viewModel: ChatsViewModel(chatRepository: context.read()),
+      ),
     ),
   ],
 );
@@ -57,5 +58,5 @@ Future<String?> _redirect(
   if (!await authRepository.isAuthenticated) {
     return isOnAuthRoute ? null : Routes.signIn;
   }
-  return isOnAuthRoute ? Routes.home : null;
+  return isOnAuthRoute ? Routes.chats : null;
 }

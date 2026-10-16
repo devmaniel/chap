@@ -9,9 +9,13 @@ abstract final class Dimens {
   static const double space2xl = 28;
   static const double space3xl = 32;
 
+  /// Side margin of full-width pages.
+  static const double gutter = 24;
+
   static const double minTapTarget = 44;
   static const double radius = 16;
   static const double radiusS = 12;
+  static const double radiusL = 24;
   static const double borderWidth = 2;
 
   /// Depth of the solid edge under a primary button.

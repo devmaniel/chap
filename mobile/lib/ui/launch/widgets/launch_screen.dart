@@ -31,7 +31,7 @@ class _LaunchScreenState extends State<LaunchScreen> {
   }
 
   void _onLoad() {
-    if (widget.viewModel.load.completed) context.go(Routes.home);
+    if (widget.viewModel.load.completed) context.go(Routes.chats);
   }
 
   @override
