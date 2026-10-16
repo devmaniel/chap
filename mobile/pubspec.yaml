@@ -1,0 +1,52 @@
+name: app
+description: "Chaps — AI friends you can message and call"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  go_router: ^17.5.0
+  provider: ^6.1.5+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/splash.png
+    - assets/images/otter_peek.png
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito-600.ttf
+          weight: 600
+        - asset: assets/fonts/Nunito-700.ttf
+          weight: 700
+        - asset: assets/fonts/Nunito-800.ttf
+          weight: 800
+        - asset: assets/fonts/Nunito-900.ttf
+          weight: 900
+
+# dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: assets/images/app_icon.png
+  android: true
+  ios: true
+  remove_alpha_ios: true
+
+# dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#1cb4f8"
+  background_image: assets/images/splash.png
+  android_12:
+    image: assets/images/app_icon.png
+    color: "#1cb4f8"
