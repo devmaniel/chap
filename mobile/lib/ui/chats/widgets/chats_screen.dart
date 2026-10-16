@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../core/themes/dimens.dart';
-import '../../core/ui/island_nav.dart';
+import '../../core/ui/app_icon.dart';
+import '../../core/ui/bottom_nav.dart';
 import '../view_model/chats_viewmodel.dart';
+import 'chat_search_bar.dart';
 import 'chat_tile.dart';
 
 /// Inbox: one list, newest first. Search lives behind the heading icon.
@@ -16,15 +18,15 @@ class ChatsScreen extends StatelessWidget {
     return ListenableBuilder(
       listenable: Listenable.merge([viewModel, viewModel.load]),
       builder: (context, _) => Scaffold(
-        extendBody: true,
-        bottomNavigationBar: IslandNav(current: AppTab.chats, onSelect: (_) {}),
+        bottomNavigationBar: BottomNav(current: AppTab.chats, onSelect: (_) {}),
         body: SafeArea(
           bottom: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const _AppHeader(),
               if (viewModel.isSearching)
-                _SearchBar(viewModel: viewModel)
+                ChatSearchBar(viewModel: viewModel)
               else
                 _Heading(onSearch: viewModel.openSearch),
               Expanded(child: _buildBody(context)),
@@ -70,8 +72,77 @@ class ChatsScreen extends StatelessWidget {
             showDivider: index > 0,
             onTap: () {},
           ),
-        if (!isSearching) MeetTile(showDivider: chats.isNotEmpty, onTap: () {}),
+        if (!isSearching) ...[
+          MeetTile(showDivider: chats.isNotEmpty, onTap: () {}),
+          const _QuietNote(),
+        ],
       ],
+    );
+  }
+}
+
+/// Wordmark on the left, your initials on the right.
+class _AppHeader extends StatelessWidget {
+  const _AppHeader();
+
+  static const _logoHeight = 28.0;
+
+  /// The logo image is 5:2.
+  static const _logoWidth = _logoHeight * 5 / 2;
+  static const _ring = 34.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(22, 9, 22, 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Image.asset(
+            'assets/images/wordmark.png',
+            height: _logoHeight,
+            width: _logoWidth,
+            semanticLabel: 'Chaps',
+          ),
+          Semantics(
+            button: true,
+            label: 'Open your controls',
+            excludeSemantics: true,
+            child: InkWell(
+              onTap: () {},
+              customBorder: const CircleBorder(),
+              child: SizedBox.square(
+                dimension: Dimens.minTapTarget,
+                child: Center(
+                  child: Container(
+                    width: _ring,
+                    height: _ring,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: colors.tertiaryContainer,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: colors.tertiary,
+                        width: Dimens.borderWidth,
+                      ),
+                    ),
+                    child: Text(
+                      'JD',
+                      maxLines: 1,
+                      style: TextStyle(
+                        color: colors.onTertiaryContainer,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -92,6 +163,7 @@ class _Heading extends StatelessWidget {
         Dimens.spaceL,
       ),
       child: Row(
+        spacing: Dimens.spaceM,
         children: [
           Expanded(
             child: Text(
@@ -111,148 +183,10 @@ class _Heading extends StatelessWidget {
             tooltip: 'Search chats',
             style: IconButton.styleFrom(
               backgroundColor: colors.surfaceContainerLow,
-              foregroundColor: colors.onSurface,
               fixedSize: const Size.square(Dimens.minTapTarget),
+              padding: EdgeInsets.zero,
             ),
-            icon: const Icon(Icons.search_rounded),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Replaces the heading while searching. Focused on open; Cancel closes it.
-class _SearchBar extends StatefulWidget {
-  const _SearchBar({required this.viewModel});
-
-  final ChatsViewModel viewModel;
-
-  @override
-  State<_SearchBar> createState() => _SearchBarState();
-}
-
-class _SearchBarState extends State<_SearchBar> {
-  static const _fieldMinHeight = 48.0;
-  static const _focusRing = 4.0;
-  static const _clearSize = 20.0;
-
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _clear() {
-    _controller.clear();
-    widget.viewModel.setQuery('');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final viewModel = widget.viewModel;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        Dimens.gutter,
-        10,
-        Dimens.spaceM,
-        Dimens.spaceL,
-      ),
-      child: Row(
-        spacing: Dimens.spaceXs,
-        children: [
-          Expanded(
-            child: Container(
-              constraints: const BoxConstraints(minHeight: _fieldMinHeight),
-              padding: const EdgeInsets.only(left: 14, right: 2),
-              decoration: BoxDecoration(
-                color: colors.surface,
-                borderRadius: BorderRadius.circular(Dimens.radius),
-                border: Border.all(
-                  color: colors.primary,
-                  width: Dimens.borderWidth,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.primaryContainer,
-                    spreadRadius: _focusRing,
-                  ),
-                ],
-              ),
-              child: Row(
-                spacing: Dimens.spaceS,
-                children: [
-                  Icon(
-                    Icons.search_rounded,
-                    size: 20,
-                    color: colors.onPrimaryContainer,
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      autofocus: true,
-                      onChanged: viewModel.setQuery,
-                      textInputAction: TextInputAction.search,
-                      cursorColor: colors.primary,
-                      style: TextStyle(
-                        color: colors.onSurface,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      decoration: const InputDecoration(
-                        hintText: 'Name or message',
-                        filled: false,
-                        isDense: true,
-                        constraints: BoxConstraints(),
-                        contentPadding: EdgeInsets.symmetric(
-                          vertical: Dimens.spaceM,
-                        ),
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                      ),
-                    ),
-                  ),
-                  if (viewModel.query.isNotEmpty)
-                    IconButton(
-                      onPressed: _clear,
-                      tooltip: 'Clear search',
-                      constraints: const BoxConstraints.tightFor(
-                        width: Dimens.minTapTarget,
-                        height: Dimens.minTapTarget,
-                      ),
-                      icon: Container(
-                        width: _clearSize,
-                        height: _clearSize,
-                        decoration: BoxDecoration(
-                          color: colors.onSurfaceVariant,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.close_rounded,
-                          size: 14,
-                          color: colors.surface,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: viewModel.closeSearch,
-            style: TextButton.styleFrom(
-              textStyle: const TextStyle(
-                fontFamily: 'Nunito',
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            child: const Text('Cancel'),
+            icon: AppIcon(AppIconName.search, color: colors.onSurface),
           ),
         ],
       ),
@@ -282,11 +216,51 @@ class _ListLabel extends StatelessWidget {
   }
 }
 
+/// Spark and one line under the list.
+class _QuietNote extends StatelessWidget {
+  const _QuietNote();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        Dimens.gutter,
+        Dimens.gutter,
+        Dimens.gutter,
+        Dimens.spaceL,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        spacing: Dimens.spaceXs,
+        children: [
+          AppIcon(
+            AppIconName.spark,
+            size: 14,
+            color: colors.onTertiaryContainer,
+          ),
+          Flexible(
+            child: Text(
+              'Fictional friends. Room to be yourself.',
+              style: TextStyle(
+                color: colors.onSurfaceVariant,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Nothing matches: their words shown back, then a hint.
 class _NoMatches extends StatelessWidget {
   const _NoMatches({required this.query});
 
   static const _iconTile = 72.0;
+  static const _textMaxWidth = 270.0;
 
   final String query;
 
@@ -306,10 +280,13 @@ class _NoMatches extends StatelessWidget {
         Semantics(
           liveRegion: true,
           child: Column(
+            spacing: Dimens.spaceXs,
             children: [
               Container(
                 width: _iconTile,
                 height: _iconTile,
+                margin: const EdgeInsets.only(bottom: Dimens.spaceM),
+                alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: colors.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(Dimens.radiusL),
@@ -320,13 +297,12 @@ class _NoMatches extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Icon(
-                  Icons.search_rounded,
+                child: AppIcon(
+                  AppIconName.search,
                   size: 32,
                   color: colors.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(height: 18),
               Text(
                 'No matches',
                 textAlign: TextAlign.center,
@@ -336,18 +312,24 @@ class _NoMatches extends StatelessWidget {
                   fontWeight: FontWeight.w900,
                 ),
               ),
-              const SizedBox(height: Dimens.spaceXs),
-              Text(
-                'Nothing for “$query”.',
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: bodyStyle.copyWith(color: colors.onSurface),
-              ),
-              Text(
-                'Try a name or a word from the chat.',
-                textAlign: TextAlign.center,
-                style: bodyStyle,
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: _textMaxWidth),
+                child: Column(
+                  children: [
+                    Text(
+                      'Nothing for “$query”.',
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: bodyStyle.copyWith(color: colors.onSurface),
+                    ),
+                    Text(
+                      'Try a name or a word from the chat.',
+                      textAlign: TextAlign.center,
+                      style: bodyStyle,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

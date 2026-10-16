@@ -41,7 +41,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('lists chats with time, unread count and the island tabs', (
+  testWidgets('lists chats with time, unread count and the tab bar', (
     tester,
   ) async {
     await pumpScreen(tester);
@@ -52,7 +52,7 @@ void main() {
     expect(find.text('Sol'), findsOneWidget);
     expect(find.text('Yesterday'), findsOneWidget);
     expect(find.text('Meet someone new'), findsOneWidget);
-    for (final tab in ['CHATS', 'DISCOVER', 'PEOPLE']) {
+    for (final tab in ['CHATS', 'DISCOVER', 'FRIENDS']) {
       expect(find.text(tab), findsOneWidget);
     }
   });

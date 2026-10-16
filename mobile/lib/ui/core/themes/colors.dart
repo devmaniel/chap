@@ -14,6 +14,7 @@ abstract final class BrandColors {
   static const softPrimary = Color(0xFFDDF4FF);
   static const primaryInk = Color(0xFF1A6FA0);
   static const primaryLine = Color(0xFF84D8FF);
+  static const sun = Color(0xFFFFC800);
   static const sunSoft = Color(0xFFFFF4CC);
   static const sunInk = Color(0xFF7A5A00);
   static const danger = Color(0xFFB42A2A);

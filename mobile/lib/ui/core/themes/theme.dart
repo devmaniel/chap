@@ -11,6 +11,7 @@ abstract final class AppTheme {
     onPrimaryContainer: BrandColors.primaryInk,
     primaryFixed: BrandColors.primaryLine,
     primaryFixedDim: BrandColors.primaryEdge,
+    tertiary: BrandColors.sun,
     tertiaryContainer: BrandColors.sunSoft,
     onTertiaryContainer: BrandColors.sunInk,
     surface: BrandColors.white,

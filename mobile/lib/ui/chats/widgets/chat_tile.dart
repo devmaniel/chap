@@ -1,7 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/chat/chat.dart';
 import '../../core/themes/dimens.dart';
+import '../../core/ui/app_icon.dart';
 import '../view_model/chats_viewmodel.dart';
 
 const _avatarSize = 52.0;
@@ -132,18 +135,18 @@ class MeetTile extends StatelessWidget {
     return _TileFrame(
       onTap: onTap,
       showDivider: showDivider,
-      leading: Container(
-        width: _avatarSize,
-        height: _avatarSize,
-        decoration: BoxDecoration(
-          color: colors.primaryContainer,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: colors.primaryFixed,
-            width: Dimens.borderWidth,
+      leading: CustomPaint(
+        foregroundPainter: _DashedRing(color: colors.primaryFixed),
+        child: Container(
+          width: _avatarSize,
+          height: _avatarSize,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: colors.primaryContainer,
+            shape: BoxShape.circle,
           ),
+          child: AppIcon(AppIconName.plus, color: colors.onPrimaryContainer),
         ),
-        child: Icon(Icons.add_rounded, color: colors.onPrimaryContainer),
       ),
       body: Row(
         spacing: Dimens.spaceM,
@@ -177,15 +180,44 @@ class MeetTile extends StatelessWidget {
               ],
             ),
           ),
-          Icon(
-            Icons.arrow_forward_rounded,
-            size: 20,
-            color: colors.onSurfaceVariant,
-          ),
+          AppIcon(AppIconName.arrow, size: 20, color: colors.onSurfaceVariant),
         ],
       ),
     );
   }
+}
+
+/// Dashed circle border drawn over its child's edge.
+class _DashedRing extends CustomPainter {
+  const _DashedRing({required this.color});
+
+  static const _dash = 6.0;
+  static const _gap = 4.0;
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const stroke = Dimens.borderWidth;
+    final radius = (size.shortestSide - stroke) / 2;
+    final dashCount = (2 * math.pi * radius / (_dash + _gap)).floor();
+    final sweep = 2 * math.pi / dashCount;
+    final dashSweep = sweep * _dash / (_dash + _gap);
+    final rect = Rect.fromCircle(
+      center: size.center(Offset.zero),
+      radius: radius,
+    );
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke;
+    for (var i = 0; i < dashCount; i++) {
+      canvas.drawArc(rect, i * sweep, dashSweep, false, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedRing oldDelegate) => oldDelegate.color != color;
 }
 
 /// Tappable row with the divider starting at the text, not the screen edge.
