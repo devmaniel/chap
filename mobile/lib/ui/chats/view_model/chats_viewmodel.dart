@@ -8,7 +8,14 @@ import '../../../utils/result.dart';
 class ChatsViewModel extends ChangeNotifier {
   ChatsViewModel({required ChatRepository chatRepository})
     : _chatRepository = chatRepository {
-    load = Command0(_load)..execute();
+    load = Command0(_load);
+    final cached = _chatRepository.cachedChats;
+    if (cached != null) {
+      _allChats = cached;
+    } else {
+      load.execute();
+    }
+    _chatRepository.addListener(_syncChats);
   }
 
   final ChatRepository _chatRepository;
@@ -21,6 +28,17 @@ class ChatsViewModel extends ChangeNotifier {
 
   bool get isSearching => _isSearching;
   String get query => _query;
+
+  void _syncChats() {
+    _allChats = _chatRepository.cachedChats ?? _allChats;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _chatRepository.removeListener(_syncChats);
+    super.dispose();
+  }
 
   /// Every chat until a query is typed, then those whose name or last
   /// message contains it, ignoring case.

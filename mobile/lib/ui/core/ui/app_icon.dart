@@ -2,7 +2,22 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// Stroke icons copied from the master mockup, one SVG each in assets/icons.
-enum AppIconName { arrow, chat, close, compass, friends, plus, search, spark }
+enum AppIconName {
+  arrow,
+  back,
+  chat,
+  close,
+  compass,
+  friends,
+  image,
+  lock,
+  phone,
+  plus,
+  search,
+  send,
+  spark,
+  wifiOff,
+}
 
 /// Decorative icon; the surrounding button or row carries the label.
 class AppIcon extends StatelessWidget {

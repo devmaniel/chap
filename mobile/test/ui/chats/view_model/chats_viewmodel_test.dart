@@ -9,6 +9,7 @@ Chat chat(String name, String lastMessage, Duration ago) => Chat(
   id: name.toLowerCase(),
   friendName: name,
   portraitAsset: 'assets/images/portrait_mina.png',
+  friendVoice: 'Warm & gentle',
   lastMessage: lastMessage,
   lastMessageAt: _now.subtract(ago),
   unreadCount: 0,
@@ -31,7 +32,7 @@ void main() {
   });
 
   test('loads every chat', () {
-    expect(viewModel.load.completed, isTrue);
+    expect(viewModel.load.running, isFalse);
     expect(viewModel.chats.map((c) => c.friendName), ['Mina', 'Kai']);
   });
 

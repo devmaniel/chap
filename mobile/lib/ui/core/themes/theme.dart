@@ -9,7 +9,9 @@ abstract final class AppTheme {
     onPrimary: BrandColors.white,
     primaryContainer: BrandColors.softPrimary,
     onPrimaryContainer: BrandColors.primaryInk,
+    // Line colors have no Material slot, so they borrow the *Fixed ones.
     primaryFixed: BrandColors.primaryLine,
+    secondaryFixed: BrandColors.dangerLine,
     primaryFixedDim: BrandColors.primaryEdge,
     tertiary: BrandColors.sun,
     tertiaryContainer: BrandColors.sunSoft,

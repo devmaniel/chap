@@ -1,10 +1,9 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/chat/chat.dart';
 import '../../core/themes/dimens.dart';
 import '../../core/ui/app_icon.dart';
+import '../../core/ui/dashed_border.dart';
 import '../view_model/chats_viewmodel.dart';
 
 const _avatarSize = 52.0;
@@ -78,9 +77,10 @@ class ChatTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: Dimens.spaceS),
-              Flexible(
+              Expanded(
                 child: Text(
                   chatTimeLabel(chat.lastMessageAt, now),
+                  textAlign: TextAlign.end,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -136,7 +136,10 @@ class MeetTile extends StatelessWidget {
       onTap: onTap,
       showDivider: showDivider,
       leading: CustomPaint(
-        foregroundPainter: _DashedRing(color: colors.primaryFixed),
+        foregroundPainter: DashedBorderPainter(
+          color: colors.primaryFixed,
+          radius: _avatarSize / 2,
+        ),
         child: Container(
           width: _avatarSize,
           height: _avatarSize,
@@ -185,39 +188,6 @@ class MeetTile extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Dashed circle border drawn over its child's edge.
-class _DashedRing extends CustomPainter {
-  const _DashedRing({required this.color});
-
-  static const _dash = 6.0;
-  static const _gap = 4.0;
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const stroke = Dimens.borderWidth;
-    final radius = (size.shortestSide - stroke) / 2;
-    final dashCount = (2 * math.pi * radius / (_dash + _gap)).floor();
-    final sweep = 2 * math.pi / dashCount;
-    final dashSweep = sweep * _dash / (_dash + _gap);
-    final rect = Rect.fromCircle(
-      center: size.center(Offset.zero),
-      radius: radius,
-    );
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = stroke;
-    for (var i = 0; i < dashCount; i++) {
-      canvas.drawArc(rect, i * sweep, dashSweep, false, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_DashedRing oldDelegate) => oldDelegate.color != color;
 }
 
 /// Tappable row with the divider starting at the text, not the screen edge.

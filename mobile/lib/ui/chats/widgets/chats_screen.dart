@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../routing/routes.dart';
 
 import '../../core/themes/dimens.dart';
 import '../../core/ui/app_icon.dart';
@@ -70,7 +73,7 @@ class ChatsScreen extends StatelessWidget {
             now: now,
             query: isSearching ? query : '',
             showDivider: index > 0,
-            onTap: () {},
+            onTap: () => context.push<void>(Routes.chat(chat.id)),
           ),
         if (!isSearching) ...[
           MeetTile(showDivider: chats.isNotEmpty, onTap: () {}),

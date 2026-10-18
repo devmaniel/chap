@@ -7,6 +7,7 @@ Chat chatAt(String id, DateTime at) => Chat(
   id: id,
   friendName: id,
   portraitAsset: 'assets/images/portrait_$id.png',
+  friendVoice: 'Warm & gentle',
   lastMessage: 'hi',
   lastMessageAt: at,
   unreadCount: 0,

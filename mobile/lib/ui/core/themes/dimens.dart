@@ -25,6 +25,57 @@ abstract final class Dimens {
   static const double iconS = 18;
   static const double spinner = 22;
 
+  // Chat measurements copied from artifacts/master-mobile.html.
+  static const double space2xs = 4;
+  static const double spaceTiny = 5;
+  static const double spaceSm = 10;
+  static const double spaceChat = 14;
+  static const double chatAvatar = 42;
+  static const double messageAvatar = 30;
+  static const double bubbleRadius = 18;
+  static const double dayRadius = 10;
+  static const double messageTimeGap = 7;
+  static const double messageTimeInset = 3;
+  static const double iconXs = 13;
+  static const double sendVisual = 36;
+  static const double photoTile = 104;
+  static const double photoRadius = 13;
+  static const double gallerySide = 72;
+  static const double galleryHandle = 40;
+  static const EdgeInsets chatInputPadding = EdgeInsets.fromLTRB(14, 11, 4, 10);
+  static const EdgeInsets chatHeaderPadding = EdgeInsets.fromLTRB(
+    14,
+    8,
+    14,
+    12,
+  );
+  static const EdgeInsets chatThreadPadding = EdgeInsets.fromLTRB(
+    20,
+    19,
+    20,
+    22,
+  );
+  static const EdgeInsets chatIntroPadding = EdgeInsets.symmetric(
+    horizontal: 14,
+    vertical: 12,
+  );
+  static const EdgeInsets chatBubblePadding = EdgeInsets.symmetric(
+    horizontal: 15,
+    vertical: 11,
+  );
+  static const EdgeInsets chatComposerPadding = EdgeInsets.fromLTRB(
+    14,
+    6,
+    14,
+    8,
+  );
+  static const EdgeInsets chatMemoryPadding = EdgeInsets.fromLTRB(
+    16,
+    10,
+    16,
+    7,
+  );
+
   static const EdgeInsets authPadding = EdgeInsets.fromLTRB(
     space2xl,
     space3xl,

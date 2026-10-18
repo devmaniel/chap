@@ -6,6 +6,8 @@ import '../ui/auth/view_model/sign_in_viewmodel.dart';
 import '../ui/auth/view_model/sign_up_viewmodel.dart';
 import '../ui/auth/widgets/sign_in_screen.dart';
 import '../ui/auth/widgets/sign_up_screen.dart';
+import '../ui/chat/view_model/chat_viewmodel.dart';
+import '../ui/chat/widgets/chat_screen.dart';
 import '../ui/chats/view_model/chats_viewmodel.dart';
 import '../ui/chats/widgets/chats_screen.dart';
 import '../ui/launch/view_model/launch_viewmodel.dart';
@@ -41,9 +43,23 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
     ),
     GoRoute(
       path: Routes.chats,
-      builder: (context, state) => ChatsScreen(
-        viewModel: ChatsViewModel(chatRepository: context.read()),
-      ),
+      builder: (context, state) =>
+          ChatsScreen(viewModel: context.read<ChatsViewModel>()),
+      routes: [
+        GoRoute(
+          path: 'chat/:id',
+          builder: (context, state) => ChatScreen(
+            key: state.pageKey,
+            viewModel: context.read<Map<String, ChatViewModel>>().putIfAbsent(
+              state.pathParameters['id']!,
+              () => ChatViewModel(
+                chatId: state.pathParameters['id']!,
+                chatRepository: context.read(),
+              ),
+            ),
+          ),
+        ),
+      ],
     ),
   ],
 );

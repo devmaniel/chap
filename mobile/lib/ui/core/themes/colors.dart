@@ -19,4 +19,5 @@ abstract final class BrandColors {
   static const sunInk = Color(0xFF7A5A00);
   static const danger = Color(0xFFB42A2A);
   static const dangerSoft = Color(0xFFFFDFE0);
+  static const dangerLine = Color(0xFFFFB2B2);
 }

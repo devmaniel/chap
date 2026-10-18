@@ -19,7 +19,7 @@ class _ChatSearchBarState extends State<ChatSearchBar> {
   static const _focusRing = 4.0;
   static const _clearSize = 20.0;
 
-  final _controller = TextEditingController();
+  late final _controller = TextEditingController(text: widget.viewModel.query);
 
   @override
   void dispose() {
