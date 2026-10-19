@@ -6,6 +6,7 @@ import '../../core/ui/dashed_border.dart';
 import '../view_model/chat_viewmodel.dart';
 import 'photo_gallery_sheet.dart';
 import 'attachment_previews.dart';
+import 'post_ref_card.dart';
 
 class ChatComposer extends StatefulWidget {
   const ChatComposer({
@@ -152,6 +153,16 @@ class _ChatComposerState extends State<ChatComposer> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if ((viewModel.draftPost, viewModel.chat) case (
+                      final post?,
+                      final chat?,
+                    ))
+                      PostRefCard(
+                        post: post,
+                        friendName: chat.friendName,
+                        portraitAsset: chat.portraitAsset,
+                        onRemove: viewModel.removePost,
+                      ),
                     if (viewModel.draftImages.isNotEmpty)
                       AttachmentPreviews(viewModel: viewModel),
                     Row(
@@ -209,6 +220,8 @@ class _ChatComposerState extends State<ChatComposer> {
                               counterText: '',
                               hintText: viewModel.isOffline
                                   ? 'Waiting for connection…'
+                                  : viewModel.draftPost != null
+                                  ? 'Reply to ${viewModel.chat?.friendName}…'
                                   : viewModel.draftImages.isEmpty
                                   ? 'Share a thought…'
                                   : 'Add a message…',

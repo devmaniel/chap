@@ -36,6 +36,7 @@ abstract class ChatRepository extends ChangeNotifier {
     required String chatId,
     required String text,
     List<String> imagePaths = const [],
+    String? postId,
   });
 
   Future<Result<List<Photo>>> getPhotos(int page);

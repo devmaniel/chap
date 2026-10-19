@@ -3,7 +3,8 @@ abstract final class Routes {
   static const signIn = '/sign-in';
   static const signUp = '/sign-up';
   static const chats = '/';
-  static String chat(String id) => '/chat/$id';
+  static String chat(String id, {String? postId}) =>
+      postId == null ? '/chat/$id' : '/chat/$id?post=$postId';
   static const discover = '/discover';
   static const friends = '/friends';
   static String friend(String id) => '/friends/$id';

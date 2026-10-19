@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../../data/repositories/auth/auth_repository.dart';
+import '../../../data/repositories/character/character_repository.dart';
 import '../../../data/repositories/chat/chat_repository.dart';
 import '../../../domain/models/chat/chat.dart';
 import '../../../domain/models/message/message.dart';
 import '../../../domain/models/photo/photo.dart';
+import '../../../domain/models/post/post.dart';
 import '../../../utils/command.dart';
 import '../../../utils/result.dart';
 
@@ -16,9 +18,11 @@ class ChatViewModel extends ChangeNotifier {
   ChatViewModel({
     required String chatId,
     required ChatRepository chatRepository,
+    required CharacterRepository characterRepository,
     this.retryDelay = const Duration(seconds: 3),
   }) : _chatId = chatId,
-       _chatRepository = chatRepository {
+       _chatRepository = chatRepository,
+       _characterRepository = characterRepository {
     load = Command0(_load);
     send = Command0(_send);
     reply = Command0(_reply);
@@ -38,6 +42,7 @@ class ChatViewModel extends ChangeNotifier {
 
   final String _chatId;
   final ChatRepository _chatRepository;
+  final CharacterRepository _characterRepository;
   final Duration retryDelay;
   late final Command0<void> load;
   late final Command0<void> send;
@@ -58,6 +63,7 @@ class ChatViewModel extends ChangeNotifier {
   List<Message> _messages = const [];
   String _draft = '';
   List<String> _draftImages = const [];
+  String? _draftPostId;
   Message? _pending;
   bool _isOffline = false;
   bool _disposed = false;
@@ -80,6 +86,15 @@ class ChatViewModel extends ChangeNotifier {
   Chat? get chat => _chat;
   List<Message> get messages => List.unmodifiable(_messages);
   List<String> get draftImages => List.unmodifiable(_draftImages);
+
+  /// The friend's post the next message replies to.
+  Post? get draftPost => _postOf(_draftPostId);
+
+  /// The post [message] replies to, when it is known.
+  Post? postFor(Message message) => _postOf(message.postId);
+
+  Post? _postOf(String? postId) =>
+      postId == null ? null : _characterRepository.cachedPost(postId);
   Message? get pending => _pending;
   bool get isOffline => _isOffline;
   String? get revealingMessageId => _revealingMessageId;
@@ -100,7 +115,10 @@ class ChatViewModel extends ChangeNotifier {
       _revealingMessageId == null &&
       !attachImages.running;
   bool get canSend =>
-      canCompose && (_draft.trim().isNotEmpty || _draftImages.isNotEmpty);
+      canCompose &&
+      (_draft.trim().isNotEmpty ||
+          _draftImages.isNotEmpty ||
+          _draftPostId != null);
 
   PendingStatus? get pendingStatus {
     if (_pending == null) return null;
@@ -119,6 +137,17 @@ class ChatViewModel extends ChangeNotifier {
   void removeImage(String path) {
     _draftImages = _draftImages.where((image) => image != path).toList();
     _saveDraft();
+    _changed();
+  }
+
+  void attachPost(String postId) {
+    if (_draftPostId == postId) return;
+    _draftPostId = postId;
+    _changed();
+  }
+
+  void removePost() {
+    _draftPostId = null;
     _changed();
   }
 
@@ -145,9 +174,11 @@ class ChatViewModel extends ChangeNotifier {
       sentAt: DateTime.now(),
       isFromYou: true,
       imagePaths: _draftImages,
+      postId: _draftPostId,
     );
     _draft = '';
     _draftImages = const [];
+    _draftPostId = null;
     _saveDraft();
     send.execute();
   }
@@ -204,6 +235,7 @@ class ChatViewModel extends ChangeNotifier {
       chatId: _chatId,
       text: pending.text,
       imagePaths: pending.imagePaths,
+      postId: pending.postId,
     );
     if (_disposed) return const Result.ok(null);
     switch (result) {

@@ -191,7 +191,10 @@ class _PhotoViewerScreenState extends State<PhotoViewerScreen> {
                             isOnDark: true,
                             onLike: viewModel.toggleLike.execute,
                             onReply: () => context.push<void>(
-                              Routes.chat(viewModel.characterId),
+                              Routes.chat(
+                                viewModel.characterId,
+                                postId: post.id,
+                              ),
                             ),
                           ),
                         ],

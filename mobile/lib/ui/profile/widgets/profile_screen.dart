@@ -22,8 +22,8 @@ class ProfileScreen extends StatelessWidget {
 
   final ProfileViewModel viewModel;
 
-  void _openChat(BuildContext context) =>
-      context.push<void>(Routes.chat(viewModel.characterId));
+  void _openChat(BuildContext context, {String? postId}) =>
+      context.push<void>(Routes.chat(viewModel.characterId, postId: postId));
 
   void _openPhoto(BuildContext context, String postId, int index) => context
       .push<void>(Routes.photo(viewModel.characterId, postId, index: index));
@@ -134,7 +134,7 @@ class ProfileScreen extends StatelessWidget {
                 character: character,
                 meta: postMetaLabel(post, now),
                 onLike: () => viewModel.toggleLike.execute(post),
-                onReply: () => _openChat(context),
+                onReply: () => _openChat(context, postId: post.id),
                 onOpenPhoto: (index) => _openPhoto(context, post.id, index),
               ),
           ],

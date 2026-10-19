@@ -4,15 +4,19 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/message/message.dart';
+import '../../../domain/models/post/post.dart';
 import '../../core/themes/dimens.dart';
 import '../view_model/chat_viewmodel.dart';
 import 'chat_animations.dart';
+import 'post_ref_card.dart';
 
 class MessageBubble extends StatelessWidget {
   const MessageBubble({
     super.key,
     required this.message,
     required this.portraitAsset,
+    required this.friendName,
+    this.post,
     this.pendingStatus,
     this.onRetry,
     this.animateReply = false,
@@ -21,6 +25,10 @@ class MessageBubble extends StatelessWidget {
 
   final Message message;
   final String portraitAsset;
+  final String friendName;
+
+  /// The friend's post this message replies to.
+  final Post? post;
   final PendingStatus? pendingStatus;
   final VoidCallback? onRetry;
   final bool animateReply;
@@ -99,6 +107,12 @@ class MessageBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: Dimens.spaceS,
           children: [
+            if (post case final post?)
+              PostRefCard(
+                post: post,
+                friendName: friendName,
+                portraitAsset: portraitAsset,
+              ),
             if (message.imagePaths.isNotEmpty)
               LayoutBuilder(
                 builder: (context, imageConstraints) => Wrap(

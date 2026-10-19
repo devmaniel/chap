@@ -8,9 +8,12 @@ import 'chat_composer.dart';
 import 'message_bubble.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key, required this.viewModel});
+  const ChatScreen({super.key, required this.viewModel, this.replyToPostId});
 
   final ChatViewModel viewModel;
+
+  /// Opened from Reply in chat: this post waits in the composer.
+  final String? replyToPostId;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -26,6 +29,11 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     widget.viewModel.setVisible(true);
+    if (widget.replyToPostId case final postId?) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => widget.viewModel.attachPost(postId),
+      );
+    }
     _controller.addListener(_draftChanged);
     _scrollController.addListener(_scrolled);
   }
@@ -154,6 +162,8 @@ class _ChatScreenState extends State<ChatScreen> {
         MessageBubble(
           key: ValueKey(message.id),
           message: message,
+          post: viewModel.postFor(message),
+          friendName: chat.friendName,
           portraitAsset: chat.portraitAsset,
           animateReply: message.id == viewModel.revealingMessageId,
           onRevealComplete: viewModel.finishReveal,
@@ -162,6 +172,8 @@ class _ChatScreenState extends State<ChatScreen> {
         MessageBubble(
           key: const ValueKey('pending-message'),
           message: pending,
+          post: viewModel.postFor(pending),
+          friendName: chat.friendName,
           portraitAsset: chat.portraitAsset,
           pendingStatus: viewModel.pendingStatus,
           onRetry: viewModel.retry,

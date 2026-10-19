@@ -140,13 +140,20 @@ class ChatRepositoryLocal extends ChatRepository {
     required String chatId,
     required String text,
     List<String> imagePaths = const [],
+    String? postId,
   }) async {
     await Future<void>.delayed(latency);
     if (_sendFailures.isNotEmpty) {
       return Result.error(_sendFailures.removeAt(0));
     }
     return Result.ok(
-      _record(chatId, text, isFromYou: true, imagePaths: imagePaths),
+      _record(
+        chatId,
+        text,
+        isFromYou: true,
+        imagePaths: imagePaths,
+        postId: postId,
+      ),
     );
   }
 
@@ -160,9 +167,13 @@ class ChatRepositoryLocal extends ChatRepository {
         .where((message) => !message.isFromYou)
         .length;
     final latest = _messages[chatId]?.lastOrNull;
-    final text = latest != null && latest.imagePaths.isNotEmpty
-        ? 'Those colors! What made you want to share this moment?'
-        : _replies[repliesSoFar % _replies.length];
+    final text = switch (latest) {
+      Message(postId: _?) =>
+        'I’m so glad that post caught your eye! What did it remind you of?',
+      Message(imagePaths: [_, ...]) =>
+        'Those colors! What made you want to share this moment?',
+      _ => _replies[repliesSoFar % _replies.length],
+    };
     return Result.ok(_record(chatId, text, isFromYou: false));
   }
 
@@ -172,6 +183,7 @@ class ChatRepositoryLocal extends ChatRepository {
     String text, {
     required bool isFromYou,
     List<String> imagePaths = const [],
+    String? postId,
   }) {
     final message = Message(
       id: 'local-${_nextId++}',
@@ -179,6 +191,7 @@ class ChatRepositoryLocal extends ChatRepository {
       sentAt: DateTime.now(),
       isFromYou: isFromYou,
       imagePaths: List.unmodifiable(imagePaths),
+      postId: postId,
     );
     _messages = {
       ..._messages,
@@ -192,7 +205,11 @@ class ChatRepositoryLocal extends ChatRepository {
                 friendName: chat.friendName,
                 portraitAsset: chat.portraitAsset,
                 friendVoice: chat.friendVoice,
-                lastMessage: text.isNotEmpty ? text : 'Shared a photo',
+                lastMessage: text.isNotEmpty
+                    ? text
+                    : imagePaths.isNotEmpty
+                    ? 'Shared a photo'
+                    : 'Replied to a post',
                 lastMessageAt: message.sentAt,
                 unreadCount: chat.unreadCount,
               )

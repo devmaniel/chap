@@ -6,6 +6,7 @@ class Message {
     required this.sentAt,
     required this.isFromYou,
     this.imagePaths = const [],
+    this.postId,
   });
 
   final String id;
@@ -15,4 +16,7 @@ class Message {
   /// False when the AI friend wrote it.
   final bool isFromYou;
   final List<String> imagePaths;
+
+  /// The friend's post this message replies to.
+  final String? postId;
 }

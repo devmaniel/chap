@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:app/data/repositories/character/character_repository_local.dart';
 import 'package:app/data/repositories/auth/auth_repository.dart';
 import 'package:app/data/repositories/chat/chat_repository_local.dart';
 import 'package:app/data/services/photo_library_service.dart';
@@ -45,6 +46,7 @@ void main() {
     final model = ChatViewModel(
       chatId: 'mina',
       retryDelay: const Duration(seconds: 2),
+      characterRepository: CharacterRepositoryLocal(),
       chatRepository: ChatRepositoryLocal(
         latency: const Duration(milliseconds: 100),
         replyDelay: const Duration(seconds: 1),

@@ -60,11 +60,13 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           path: 'chat/:id',
           builder: (context, state) => ChatScreen(
             key: state.pageKey,
+            replyToPostId: state.uri.queryParameters['post'],
             viewModel: context.read<Map<String, ChatViewModel>>().putIfAbsent(
               state.pathParameters['id']!,
               () => ChatViewModel(
                 chatId: state.pathParameters['id']!,
                 chatRepository: context.read(),
+                characterRepository: context.read(),
               ),
             ),
           ),

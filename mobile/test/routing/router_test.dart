@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:app/config/dependencies.dart';
 import 'package:app/data/repositories/auth/auth_repository.dart';
 import 'package:app/data/repositories/auth/auth_repository_local.dart';
+import 'package:app/data/repositories/character/character_repository.dart';
+import 'package:app/data/repositories/character/character_repository_local.dart';
 import 'package:app/data/repositories/chat/chat_repository.dart';
 import 'package:app/data/repositories/chat/chat_repository_local.dart';
 import 'package:app/domain/models/chat/chat.dart';
@@ -49,12 +51,14 @@ class _CountingRepository extends ChatRepositoryLocal {
     required String chatId,
     required String text,
     List<String> imagePaths = const [],
+    String? postId,
   }) async {
     await sendGate?.future;
     return super.sendMessage(
       chatId: chatId,
       text: text,
       imagePaths: imagePaths,
+      postId: postId,
     );
   }
 
@@ -104,6 +108,9 @@ Future<GoRouter> _pumpApp(
       providers: [
         ChangeNotifierProvider<AuthRepository>.value(value: auth),
         ChangeNotifierProvider<ChatRepository>.value(value: chats),
+        ChangeNotifierProvider<CharacterRepository>(
+          create: (_) => CharacterRepositoryLocal(),
+        ),
         ...chatViewModelProviders,
       ],
       child: MaterialApp.router(theme: AppTheme.light, routerConfig: appRouter),

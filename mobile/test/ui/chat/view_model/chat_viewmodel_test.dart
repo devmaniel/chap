@@ -1,3 +1,4 @@
+import 'package:app/data/repositories/character/character_repository_local.dart';
 import 'package:app/data/repositories/auth/auth_repository.dart';
 import 'package:app/data/repositories/chat/chat_repository_local.dart';
 import 'package:app/domain/models/chat/chat.dart';
@@ -32,6 +33,7 @@ void main() {
   ) async {
     final model = ChatViewModel(
       chatId: 'mina',
+      characterRepository: CharacterRepositoryLocal(),
       chatRepository: repository,
       retryDelay: const Duration(seconds: 2),
     );
@@ -155,7 +157,11 @@ void main() {
     tester,
   ) async {
     final repo = repository(sendFailures: [const OfflineException()]);
-    final model = ChatViewModel(chatId: 'mina', chatRepository: repo);
+    final model = ChatViewModel(
+      chatId: 'mina',
+      chatRepository: repo,
+      characterRepository: CharacterRepositoryLocal(),
+    );
     await tester.pump(const Duration(milliseconds: 100));
     model.setDraft('Hello');
     model.submit();
@@ -183,5 +189,25 @@ void main() {
     model.submit();
     expect(repo.draftFor('mina'), isNull);
     await tester.pump(const Duration(seconds: 2));
+  });
+
+  testWidgets('reply to a post sends it with the message and clears it', (
+    tester,
+  ) async {
+    final model = await load(tester, repository());
+    model.attachPost('mina-1');
+    expect(model.canSend, isTrue);
+
+    model.setDraft('Love this');
+    model.submit();
+    expect(model.pending?.postId, 'mina-1');
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(model.messages.last.postId, 'mina-1');
+
+    await tester.pump(const Duration(seconds: 2));
+    expect(model.messages.last.text, contains('post'));
+    model.attachPost('mina-1');
+    model.removePost();
+    expect(model.canSend, isFalse);
   });
 }
