@@ -34,3 +34,30 @@ class Command0<T> extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+/// [Command0] for an action that takes one argument.
+class Command1<T, A> extends ChangeNotifier {
+  Command1(this._action);
+
+  final Future<Result<T>> Function(A) _action;
+
+  bool _running = false;
+  Result<T>? _result;
+
+  bool get running => _running;
+  bool get error => _result is Error<T>;
+  Result<T>? get result => _result;
+
+  Future<void> execute(A argument) async {
+    if (_running) return;
+    _running = true;
+    _result = null;
+    notifyListeners();
+    try {
+      _result = await _action(argument);
+    } finally {
+      _running = false;
+      notifyListeners();
+    }
+  }
+}

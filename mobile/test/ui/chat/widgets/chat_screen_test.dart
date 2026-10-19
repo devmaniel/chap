@@ -7,6 +7,7 @@ import 'package:app/domain/models/chat/chat.dart';
 import 'package:app/domain/models/message/message.dart';
 import 'package:app/ui/chat/view_model/chat_viewmodel.dart';
 import 'package:app/ui/chat/widgets/chat_screen.dart';
+import 'package:app/ui/chat/widgets/chat_animations.dart';
 import 'package:app/ui/core/themes/theme.dart';
 import 'package:app/utils/result.dart';
 import 'package:flutter/material.dart';
@@ -119,7 +120,8 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await tester.pump(const Duration(milliseconds: 200));
     final answer = model.messages.last.text;
-    expect(find.text(answer), findsNothing);
+    expect(find.byType(BubblePop), findsOneWidget);
+    expect(model.revealingMessageId, isNotNull);
     await tester.pumpAndSettle();
     expect(find.text(answer), findsOneWidget);
     expect(model.revealingMessageId, isNull);

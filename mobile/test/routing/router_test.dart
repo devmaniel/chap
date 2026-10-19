@@ -221,7 +221,7 @@ void main() {
         model.messages.where((message) => !message.isFromYou),
         hasLength(1),
       );
-      expect(find.byType(ReplyText), findsNothing);
+      expect(find.byType(BubblePop), findsNothing);
       expect(find.text(model.messages.last.text), findsOneWidget);
       expect(repository.reads, 0);
       expect(tester.takeException(), isNull);

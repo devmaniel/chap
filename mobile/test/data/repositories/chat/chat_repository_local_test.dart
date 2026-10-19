@@ -29,4 +29,18 @@ void main() {
     final ids = (result as Ok<List<Chat>>).value.map((chat) => chat.id);
     expect(ids, ['new', 'mid', 'old']);
   });
+
+  test('saves a draft and clears it when emptied', () {
+    final repository = ChatRepositoryLocal();
+    var notified = 0;
+    repository.addListener(() => notified++);
+
+    repository.saveDraft('mina', (text: 'Hi', imagePaths: ['a']));
+    expect(repository.draftFor('mina')?.text, 'Hi');
+    expect(repository.draftFor('mina')?.imagePaths, ['a']);
+
+    repository.saveDraft('mina', (text: '  ', imagePaths: []));
+    expect(repository.draftFor('mina'), isNull);
+    expect(notified, 2);
+  });
 }

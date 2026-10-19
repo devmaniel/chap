@@ -69,4 +69,10 @@ void main() {
     expect(label(DateTime(2026, 10, 15, 23)), 'Yesterday');
     expect(label(DateTime(2026, 10, 3, 9)), '10/3');
   });
+
+  test('draft preview shows photos, text or both', () {
+    expect(draftPreview((text: ' Hi ', imagePaths: [])), 'Hi');
+    expect(draftPreview((text: '', imagePaths: ['a'])), 'Photo');
+    expect(draftPreview((text: 'Hi', imagePaths: ['a', 'b'])), '2 photos · Hi');
+  });
 }

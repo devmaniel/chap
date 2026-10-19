@@ -39,6 +39,7 @@ class ChatRepositoryLocal extends ChatRepository {
   List<Chat> _chats;
   Map<String, List<Message>> _messages;
   int _nextId = 0;
+  Map<String, Draft> _drafts = const {};
   final PhotoLibraryService _photoLibraryService;
   final List<Exception> _sendFailures;
   final List<Exception> _replyFailures;
@@ -55,6 +56,21 @@ class ChatRepositoryLocal extends ChatRepository {
   @override
   List<Message> cachedMessages(String chatId) =>
       List.unmodifiable(_messages[chatId] ?? const []);
+
+  @override
+  Draft? draftFor(String chatId) => _drafts[chatId];
+
+  @override
+  void saveDraft(String chatId, Draft draft) {
+    final isEmpty = draft.text.trim().isEmpty && draft.imagePaths.isEmpty;
+    if (isEmpty && !_drafts.containsKey(chatId)) return;
+    _drafts = {
+      for (final entry in _drafts.entries)
+        if (entry.key != chatId) entry.key: entry.value,
+      if (!isEmpty) chatId: draft,
+    };
+    notifyListeners();
+  }
 
   @override
   Future<Result<List<Photo>>> getPhotos(int page) async {
@@ -90,6 +106,26 @@ class ChatRepositoryLocal extends ChatRepository {
     await Future<void>.delayed(latency);
     final chat = cachedChat(chatId);
     if (chat == null) return const Result.error(ChatNotFoundException());
+    return Result.ok(chat);
+  }
+
+  @override
+  Future<Result<Chat>> startChat(Chat chat) async {
+    final existing = cachedChat(chat.id);
+    if (existing != null) return Result.ok(existing);
+    _chats = [..._chats, chat];
+    _messages = {
+      ..._messages,
+      chat.id: [
+        Message(
+          id: 'local-${_nextId++}',
+          text: chat.lastMessage,
+          sentAt: chat.lastMessageAt,
+          isFromYou: false,
+        ),
+      ],
+    };
+    notifyListeners();
     return Result.ok(chat);
   }
 

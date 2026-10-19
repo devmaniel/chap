@@ -9,6 +9,8 @@ enum AppIconName {
   close,
   compass,
   friends,
+  heart,
+  heartFilled,
   image,
   lock,
   phone,
@@ -16,6 +18,7 @@ enum AppIconName {
   search,
   send,
   spark,
+  speaker,
   wifiOff,
 }
 

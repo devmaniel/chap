@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../routing/routes.dart';
 
 import '../../core/themes/dimens.dart';
+import '../../core/ui/app_header.dart';
 import '../../core/ui/app_icon.dart';
 import '../../core/ui/bottom_nav.dart';
 import '../view_model/chats_viewmodel.dart';
@@ -21,13 +22,20 @@ class ChatsScreen extends StatelessWidget {
     return ListenableBuilder(
       listenable: Listenable.merge([viewModel, viewModel.load]),
       builder: (context, _) => Scaffold(
-        bottomNavigationBar: BottomNav(current: AppTab.chats, onSelect: (_) {}),
+        bottomNavigationBar: BottomNav(
+          current: AppTab.chats,
+          onSelect: (tab) => switch (tab) {
+            AppTab.chats => null,
+            AppTab.discover => context.go(Routes.discover),
+            AppTab.friends => context.go(Routes.friends),
+          },
+        ),
         body: SafeArea(
           bottom: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const _AppHeader(),
+              const AppHeader(),
               if (viewModel.isSearching)
                 ChatSearchBar(viewModel: viewModel)
               else
@@ -70,6 +78,7 @@ class ChatsScreen extends StatelessWidget {
         for (final (index, chat) in chats.indexed)
           ChatTile(
             chat: chat,
+            draft: viewModel.draftFor(chat.id),
             now: now,
             query: isSearching ? query : '',
             showDivider: index > 0,
@@ -80,72 +89,6 @@ class ChatsScreen extends StatelessWidget {
           const _QuietNote(),
         ],
       ],
-    );
-  }
-}
-
-/// Wordmark on the left, your initials on the right.
-class _AppHeader extends StatelessWidget {
-  const _AppHeader();
-
-  static const _logoHeight = 28.0;
-
-  /// The logo image is 5:2.
-  static const _logoWidth = _logoHeight * 5 / 2;
-  static const _ring = 34.0;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(22, 9, 22, 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Image.asset(
-            'assets/images/wordmark.png',
-            height: _logoHeight,
-            width: _logoWidth,
-            semanticLabel: 'Chaps',
-          ),
-          Semantics(
-            button: true,
-            label: 'Open your controls',
-            excludeSemantics: true,
-            child: InkWell(
-              onTap: () {},
-              customBorder: const CircleBorder(),
-              child: SizedBox.square(
-                dimension: Dimens.minTapTarget,
-                child: Center(
-                  child: Container(
-                    width: _ring,
-                    height: _ring,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: colors.tertiaryContainer,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: colors.tertiary,
-                        width: Dimens.borderWidth,
-                      ),
-                    ),
-                    child: Text(
-                      'JD',
-                      maxLines: 1,
-                      style: TextStyle(
-                        color: colors.onTertiaryContainer,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

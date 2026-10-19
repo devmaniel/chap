@@ -29,6 +29,7 @@ flutter:
     - assets/images/portrait_mina.png
     - assets/images/portrait_kai.png
     - assets/images/portrait_sol.png
+    - assets/images/portrait_lumi.png
     - assets/images/wordmark.png
     - assets/icons/
   fonts:

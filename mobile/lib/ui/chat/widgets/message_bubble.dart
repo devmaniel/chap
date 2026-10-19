@@ -55,6 +55,81 @@ class MessageBubble extends StatelessWidget {
       height: 1.6,
       fontWeight: FontWeight.w600,
     );
+    final bubble = TweenAnimationBuilder<double>(
+      key: ValueKey(pendingStatus),
+      tween: Tween(begin: failed ? 1 : 0, end: 0),
+      duration: !failed || MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 400),
+      builder: (context, value, child) => Transform.translate(
+        offset: Offset(math.sin(value * math.pi * 5) * Dimens.spaceXs, 0),
+        child: child,
+      ),
+      child: Container(
+        padding: message.imagePaths.isEmpty
+            ? Dimens.chatBubblePadding
+            : const EdgeInsets.all(Dimens.spaceXs),
+        decoration: BoxDecoration(
+          color: fill,
+          border: Border.all(
+            color: line,
+            width: message.imagePaths.isEmpty ? Dimens.borderWidth : 0,
+          ),
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(Dimens.bubbleRadius),
+            topRight: const Radius.circular(Dimens.bubbleRadius),
+            bottomLeft: Radius.circular(
+              message.isFromYou ? Dimens.bubbleRadius : Dimens.spaceXs,
+            ),
+            bottomRight: Radius.circular(
+              message.isFromYou ? Dimens.spaceXs : Dimens.bubbleRadius,
+            ),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: message.isFromYou && !pending && !failed
+                  ? colors.primaryFixedDim
+                  : line,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: Dimens.spaceS,
+          children: [
+            if (message.imagePaths.isNotEmpty)
+              LayoutBuilder(
+                builder: (context, imageConstraints) => Wrap(
+                  spacing: Dimens.space2xs,
+                  runSpacing: Dimens.space2xs,
+                  children: [
+                    for (final (index, path) in message.imagePaths.indexed)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(Dimens.photoRadius),
+                        child: Image.file(
+                          File(path),
+                          width: message.imagePaths.length == 1
+                              ? imageConstraints.maxWidth
+                              : (imageConstraints.maxWidth - Dimens.space2xs) /
+                                    2,
+                          height: message.imagePaths.length == 1
+                              ? imageConstraints.maxWidth
+                              : (imageConstraints.maxWidth - Dimens.space2xs) /
+                                    2,
+                          fit: BoxFit.cover,
+                          semanticLabel: 'Photo ${index + 1}',
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            if (message.text.isNotEmpty) Text(message.text, style: style),
+          ],
+        ),
+      ),
+    );
     return Padding(
       padding: const EdgeInsets.only(bottom: Dimens.spaceChat),
       child: LayoutBuilder(
@@ -101,106 +176,10 @@ class MessageBubble extends StatelessWidget {
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
-                    TweenAnimationBuilder<double>(
-                      key: ValueKey(pendingStatus),
-                      tween: Tween(begin: failed ? 1 : 0, end: 0),
-                      duration:
-                          !failed || MediaQuery.disableAnimationsOf(context)
-                          ? Duration.zero
-                          : const Duration(milliseconds: 400),
-                      builder: (context, value, child) => Transform.translate(
-                        offset: Offset(
-                          math.sin(value * math.pi * 5) * Dimens.spaceXs,
-                          0,
-                        ),
-                        child: child,
-                      ),
-                      child: Container(
-                        padding: message.imagePaths.isEmpty
-                            ? Dimens.chatBubblePadding
-                            : const EdgeInsets.all(Dimens.spaceXs),
-                        decoration: BoxDecoration(
-                          color: fill,
-                          border: Border.all(
-                            color: line,
-                            width: message.imagePaths.isEmpty
-                                ? Dimens.borderWidth
-                                : 0,
-                          ),
-                          borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(Dimens.bubbleRadius),
-                            topRight: const Radius.circular(
-                              Dimens.bubbleRadius,
-                            ),
-                            bottomLeft: Radius.circular(
-                              message.isFromYou
-                                  ? Dimens.bubbleRadius
-                                  : Dimens.spaceXs,
-                            ),
-                            bottomRight: Radius.circular(
-                              message.isFromYou
-                                  ? Dimens.spaceXs
-                                  : Dimens.bubbleRadius,
-                            ),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: message.isFromYou && !pending && !failed
-                                  ? colors.primaryFixedDim
-                                  : line,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: Dimens.spaceS,
-                          children: [
-                            if (message.imagePaths.isNotEmpty)
-                              LayoutBuilder(
-                                builder: (context, imageConstraints) => Wrap(
-                                  spacing: Dimens.space2xs,
-                                  runSpacing: Dimens.space2xs,
-                                  children: [
-                                    for (final (index, path)
-                                        in message.imagePaths.indexed)
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          Dimens.photoRadius,
-                                        ),
-                                        child: Image.file(
-                                          File(path),
-                                          width: message.imagePaths.length == 1
-                                              ? imageConstraints.maxWidth
-                                              : (imageConstraints.maxWidth -
-                                                        Dimens.space2xs) /
-                                                    2,
-                                          height: message.imagePaths.length == 1
-                                              ? imageConstraints.maxWidth
-                                              : (imageConstraints.maxWidth -
-                                                        Dimens.space2xs) /
-                                                    2,
-                                          fit: BoxFit.cover,
-                                          semanticLabel: 'Photo ${index + 1}',
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            if (message.text.isNotEmpty)
-                              if (animateReply)
-                                ReplyText(
-                                  text: message.text,
-                                  style: style,
-                                  onComplete: onRevealComplete!,
-                                )
-                              else
-                                Text(message.text, style: style),
-                          ],
-                        ),
-                      ),
-                    ),
+                    if (animateReply)
+                      BubblePop(onComplete: onRevealComplete, child: bubble)
+                    else
+                      bubble,
                     Padding(
                       padding: const EdgeInsets.only(
                         top: Dimens.messageTimeGap,

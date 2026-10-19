@@ -35,6 +35,7 @@ abstract final class Dimens {
   static const double bubbleRadius = 18;
   static const double dayRadius = 10;
   static const double messageTimeGap = 7;
+  static const double typingDot = 7;
   static const double messageTimeInset = 3;
   static const double iconXs = 13;
   static const double sendVisual = 36;

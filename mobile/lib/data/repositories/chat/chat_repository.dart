@@ -5,15 +5,28 @@ import '../../../domain/models/message/message.dart';
 import '../../../domain/models/photo/photo.dart';
 import '../../../utils/result.dart';
 
+/// Unsent text and photos left in a chat's composer.
+typedef Draft = ({String text, List<String> imagePaths});
+
 abstract class ChatRepository extends ChangeNotifier {
   List<Chat>? get cachedChats;
   Chat? cachedChat(String chatId);
   List<Message>? cachedMessages(String chatId);
 
+  /// The chat's unsent draft, or null when the composer is empty.
+  Draft? draftFor(String chatId);
+
+  /// Stores the draft; an empty one clears it.
+  void saveDraft(String chatId, Draft draft);
+
   /// Every chat, newest first.
   Future<Result<List<Chat>>> getChats();
 
   Future<Result<Chat>> getChat(String chatId);
+
+  /// Adds [chat] with its last message as the friend's first one, unless a
+  /// chat with that id already exists. Returns the stored chat.
+  Future<Result<Chat>> startChat(Chat chat);
 
   /// The conversation, oldest first.
   Future<Result<List<Message>>> getMessages(String chatId);

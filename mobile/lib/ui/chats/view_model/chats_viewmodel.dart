@@ -27,6 +27,8 @@ class ChatsViewModel extends ChangeNotifier {
   String _query = '';
 
   bool get isSearching => _isSearching;
+
+  Draft? draftFor(String chatId) => _chatRepository.draftFor(chatId);
   String get query => _query;
 
   void _syncChats() {
@@ -80,6 +82,16 @@ class ChatsViewModel extends ChangeNotifier {
         return Result.error(error);
     }
   }
+}
+
+/// Inbox preview after "Draft:" — photo count, then text, whichever exist.
+String draftPreview(Draft draft) {
+  final count = draft.imagePaths.length;
+  final text = draft.text.trim();
+  return [
+    if (count > 0) count == 1 ? 'Photo' : '$count photos',
+    if (text.isNotEmpty) text,
+  ].join(' · ');
 }
 
 /// Short time beside a chat: Now, 12m, 3h, Yesterday, then month/day.

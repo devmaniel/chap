@@ -30,6 +30,9 @@ class ChatViewModel extends ChangeNotifier {
     }
     _chat = _chatRepository.cachedChat(_chatId);
     _messages = _chatRepository.cachedMessages(_chatId) ?? const [];
+    final draft = _chatRepository.draftFor(_chatId);
+    _draft = draft?.text ?? '';
+    _draftImages = draft?.imagePaths ?? const [];
     if (_chat == null) load.execute();
   }
 
@@ -109,11 +112,13 @@ class ChatViewModel extends ChangeNotifier {
   void setDraft(String value) {
     if (_draft == value) return;
     _draft = value;
+    _saveDraft();
     _changed();
   }
 
   void removeImage(String path) {
     _draftImages = _draftImages.where((image) => image != path).toList();
+    _saveDraft();
     _changed();
   }
 
@@ -143,6 +148,7 @@ class ChatViewModel extends ChangeNotifier {
     );
     _draft = '';
     _draftImages = const [];
+    _saveDraft();
     send.execute();
   }
 
@@ -155,6 +161,11 @@ class ChatViewModel extends ChangeNotifier {
     _revealingMessageId = null;
     _changed();
   }
+
+  void _saveDraft() => _chatRepository.saveDraft(_chatId, (
+    text: _draft,
+    imagePaths: _draftImages,
+  ));
 
   void _changed() {
     if (!_disposed) notifyListeners();
@@ -254,6 +265,7 @@ class ChatViewModel extends ChangeNotifier {
     switch (result) {
       case Ok(:final value):
         _draftImages = {..._draftImages, ...value}.toList();
+        _saveDraft();
         return const Result.ok(null);
       case Error(:final error):
         return Result.error(error);

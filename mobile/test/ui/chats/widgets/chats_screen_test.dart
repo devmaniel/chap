@@ -7,33 +7,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  Future<void> pumpScreen(WidgetTester tester) async {
+  Future<void> pumpScreen(
+    WidgetTester tester, {
+    void Function(ChatRepositoryLocal repository)? arrange,
+  }) async {
     final now = DateTime.now();
-    final viewModel = ChatsViewModel(
-      chatRepository: ChatRepositoryLocal(
-        latency: Duration.zero,
-        chats: [
-          Chat(
-            id: 'mina',
-            friendName: 'Mina',
-            portraitAsset: 'assets/images/portrait_mina.png',
-            friendVoice: 'Warm & gentle',
-            lastMessage: 'I finally found that little bookshop.',
-            lastMessageAt: now.subtract(const Duration(minutes: 12)),
-            unreadCount: 2,
-          ),
-          Chat(
-            id: 'sol',
-            friendName: 'Sol',
-            portraitAsset: 'assets/images/portrait_sol.png',
-            friendVoice: 'Warm & gentle',
-            lastMessage: 'Tell me how your sketch turned out.',
-            lastMessageAt: now.subtract(const Duration(days: 1)),
-            unreadCount: 0,
-          ),
-        ],
-      ),
+    final repository = ChatRepositoryLocal(
+      latency: Duration.zero,
+      chats: [
+        Chat(
+          id: 'mina',
+          friendName: 'Mina',
+          portraitAsset: 'assets/images/portrait_mina.png',
+          friendVoice: 'Warm & gentle',
+          lastMessage: 'I finally found that little bookshop.',
+          lastMessageAt: now.subtract(const Duration(minutes: 12)),
+          unreadCount: 2,
+        ),
+        Chat(
+          id: 'sol',
+          friendName: 'Sol',
+          portraitAsset: 'assets/images/portrait_sol.png',
+          friendVoice: 'Warm & gentle',
+          lastMessage: 'Tell me how your sketch turned out.',
+          lastMessageAt: now.subtract(const Duration(days: 1)),
+          unreadCount: 0,
+        ),
+      ],
     );
+    arrange?.call(repository);
+    final viewModel = ChatsViewModel(chatRepository: repository);
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
@@ -94,5 +97,19 @@ void main() {
     await pumpScreen(tester);
 
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a draft replaces the preview and unread badge', (tester) async {
+    await pumpScreen(
+      tester,
+      arrange: (repository) => repository.saveDraft('mina', (
+        text: 'Half a thought',
+        imagePaths: [],
+      )),
+    );
+
+    expect(find.textContaining('Draft: Half a thought'), findsOneWidget);
+    expect(find.textContaining('I finally found'), findsNothing);
+    expect(find.text('2'), findsNothing);
   });
 }

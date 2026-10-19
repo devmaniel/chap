@@ -165,4 +165,23 @@ void main() {
     expect(model.messages, isEmpty);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('draft is stored in the repository and cleared on send', (
+    tester,
+  ) async {
+    final repo = repository();
+    repo.saveDraft('mina', (text: 'Saved', imagePaths: ['a']));
+    final model = await load(tester, repo);
+    expect(model.draft, 'Saved');
+    expect(model.draftImages, ['a']);
+
+    model.removeImage('a');
+    model.setDraft('Edited');
+    expect(repo.draftFor('mina')?.text, 'Edited');
+    expect(repo.draftFor('mina')?.imagePaths, isEmpty);
+
+    model.submit();
+    expect(repo.draftFor('mina'), isNull);
+    await tester.pump(const Duration(seconds: 2));
+  });
 }

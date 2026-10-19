@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../data/repositories/chat/chat_repository.dart';
 import '../../../domain/models/chat/chat.dart';
 import '../../core/themes/dimens.dart';
+import '../../core/ui/ai_tag.dart';
 import '../../core/ui/app_icon.dart';
 import '../../core/ui/dashed_border.dart';
 import '../view_model/chats_viewmodel.dart';
@@ -10,18 +12,21 @@ const _avatarSize = 52.0;
 const _avatarGap = 14.0;
 
 /// One inbox row. Unread: dark bold preview, blue time, count badge.
-/// Read: grey. The part matching [query] is highlighted.
+/// Read: grey. A [draft] replaces the preview and the badge.
+/// The part matching [query] is highlighted.
 class ChatTile extends StatelessWidget {
   const ChatTile({
     super.key,
     required this.chat,
     required this.now,
+    this.draft,
     required this.onTap,
     this.query = '',
     this.showDivider = true,
   });
 
   final Chat chat;
+  final Draft? draft;
   final DateTime now;
   final VoidCallback onTap;
   final String query;
@@ -72,7 +77,7 @@ class ChatTile extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const _AiTag(),
+                    const AiTag(),
                   ],
                 ),
               ),
@@ -99,7 +104,20 @@ class ChatTile extends StatelessWidget {
             children: [
               Expanded(
                 child: Text.rich(
-                  _highlight(chat.lastMessage, query, markStyle),
+                  draft == null
+                      ? _highlight(chat.lastMessage, query, markStyle)
+                      : TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Draft: ',
+                              style: TextStyle(
+                                color: colors.error,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            TextSpan(text: draftPreview(draft!)),
+                          ],
+                        ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -112,7 +130,8 @@ class ChatTile extends StatelessWidget {
                   ),
                 ),
               ),
-              if (isUnread) _UnreadBadge(count: chat.unreadCount),
+              if (isUnread && draft == null)
+                _UnreadBadge(count: chat.unreadCount),
             ],
           ),
         ],
@@ -239,33 +258,6 @@ class _TileFrame extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AiTag extends StatelessWidget {
-  const _AiTag();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.tertiaryContainer,
-        borderRadius: BorderRadius.circular(Dimens.spaceXs),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-        child: Text(
-          'AI',
-          style: TextStyle(
-            color: colors.onTertiaryContainer,
-            fontSize: 9,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 0.54,
           ),
         ),
       ),
