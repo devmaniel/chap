@@ -5,9 +5,10 @@ import '../../core/themes/dimens.dart';
 import '../../core/ui/app_icon.dart';
 
 class ChatHeader extends StatelessWidget {
-  const ChatHeader({super.key, required this.chat});
+  const ChatHeader({super.key, required this.chat, required this.onCall});
 
   final Chat? chat;
+  final VoidCallback onCall;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +93,7 @@ class ChatHeader extends StatelessWidget {
               IconButton(
                 tooltip: 'Call ${chat!.friendName}',
                 style: buttonStyle,
-                onPressed: null,
+                onPressed: onCall,
                 icon: AppIcon(AppIconName.phone, color: colors.onSurface),
               ),
           ],

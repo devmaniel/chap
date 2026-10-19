@@ -188,6 +188,12 @@ class ChatViewModel extends ChangeNotifier {
     if (_pending != null) send.execute();
   }
 
+  /// Picks up messages stored while the chat was covered, like a call record.
+  void refreshMessages() {
+    _messages = _chatRepository.cachedMessages(_chatId) ?? _messages;
+    _changed();
+  }
+
   void finishReveal() {
     _revealingMessageId = null;
     _changed();
@@ -309,6 +315,13 @@ String messageTimeLabel(DateTime at) {
   final local = at.toLocal();
   final hour = local.hour % 12 == 0 ? 12 : local.hour % 12;
   return '$hour:${local.minute.toString().padLeft(2, '0')}';
+}
+
+/// Call length as mm:ss, e.g. 02:31.
+String callDurationLabel(Duration duration) {
+  final minutes = duration.inMinutes.toString().padLeft(2, '0');
+  final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
+  return '$minutes:$seconds';
 }
 
 String messageDayLabel(DateTime at) {

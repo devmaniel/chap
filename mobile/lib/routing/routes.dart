@@ -5,6 +5,7 @@ abstract final class Routes {
   static const chats = '/';
   static String chat(String id, {String? postId}) =>
       postId == null ? '/chat/$id' : '/chat/$id?post=$postId';
+  static String call(String chatId) => '/chat/$chatId/call';
   static const discover = '/discover';
   static const friends = '/friends';
   static String friend(String id) => '/friends/$id';

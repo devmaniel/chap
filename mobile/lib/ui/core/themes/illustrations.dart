@@ -39,6 +39,28 @@ abstract final class Illustrations {
     _ => _css(135, List.filled(3, tone(characterId))),
   };
 
+  /// Warm backdrop behind the friend on a voice call.
+  static const callStage = RadialGradient(
+    center: Alignment(-0.7, -1),
+    radius: 1.2,
+    colors: [Color(0xFFFFF6EC), Color(0xFFFFE6CC), Color(0xFFFFD6AD)],
+    stops: [0, 0.5, 1],
+  );
+
+  /// Dark backdrop while a call rings, like an iPhone outgoing call.
+  static const callDial = RadialGradient(
+    center: Alignment(0, -0.8),
+    radius: 1.5,
+    colors: [Color(0xFF5A4636), Color(0xFF2A2420), Color(0xFF141210)],
+    stops: [0, 0.55, 1],
+  );
+
+  /// Dark floor under the call controls.
+  static const callBar = LinearGradient(
+    colors: [Color(0xFF0F1418), Color(0xFF1A252C), Color(0xFF2E4450)],
+    stops: [0, 0.7, 1],
+  );
+
   static Gradient scene(PhotoScene scene) => switch (scene) {
     PhotoScene.sunset => _css(160, const [
       Color(0xFFFFE08A),

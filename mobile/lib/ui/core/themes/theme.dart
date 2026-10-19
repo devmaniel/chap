@@ -13,6 +13,9 @@ abstract final class AppTheme {
     primaryFixed: BrandColors.primaryLine,
     secondaryFixed: BrandColors.dangerLine,
     primaryFixedDim: BrandColors.primaryEdge,
+    // Call again on a failed call.
+    secondary: BrandColors.callGreen,
+    onSecondary: BrandColors.white,
     tertiary: BrandColors.sun,
     tertiaryContainer: BrandColors.sunSoft,
     onTertiaryContainer: BrandColors.sunInk,

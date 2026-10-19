@@ -20,4 +20,5 @@ abstract final class BrandColors {
   static const danger = Color(0xFFB42A2A);
   static const dangerSoft = Color(0xFFFFDFE0);
   static const dangerLine = Color(0xFFFFB2B2);
+  static const callGreen = Color(0xFF34C759);
 }

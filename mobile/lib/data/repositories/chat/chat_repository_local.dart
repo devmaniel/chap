@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 
 import '../../../domain/models/chat/chat.dart';
@@ -18,11 +20,15 @@ class ChatRepositoryLocal extends ChatRepository {
     PhotoLibraryService? photoLibraryService,
     List<Exception> sendFailures = const [],
     List<Exception> replyFailures = const [],
+    this.ringDelay = const Duration(seconds: 3),
+    List<Exception> callFailures = const [],
+    this.callDrop,
   }) : _chats = chats,
        _messages = messages,
        _photoLibraryService = photoLibraryService ?? PhotoLibraryService(),
        _sendFailures = [...sendFailures],
-       _replyFailures = [...replyFailures];
+       _replyFailures = [...replyFailures],
+       _callFailures = [...callFailures];
 
   static const _replies = [
     'I love that. What made you notice it?',
@@ -43,6 +49,15 @@ class ChatRepositoryLocal extends ChatRepository {
   final PhotoLibraryService _photoLibraryService;
   final List<Exception> _sendFailures;
   final List<Exception> _replyFailures;
+
+  /// How long a call rings before the friend picks up.
+  final Duration ringDelay;
+
+  /// When a picked-up call loses its connection, and for how long.
+  final ({Duration after, Duration length})? callDrop;
+  final List<Exception> _callFailures;
+  bool _isCallOnline = true;
+  List<Timer> _callDropTimers = const [];
 
   @override
   List<Chat> get cachedChats => List.unmodifiable(
@@ -158,6 +173,45 @@ class ChatRepositoryLocal extends ChatRepository {
   }
 
   @override
+  bool get isCallOnline => _isCallOnline;
+
+  @override
+  Future<Result<void>> startCall(String chatId) async {
+    await Future<void>.delayed(ringDelay);
+    if (_callFailures.isNotEmpty) {
+      return Result.error(_callFailures.removeAt(0));
+    }
+    final drop = callDrop;
+    if (drop != null) {
+      _callDropTimers = [
+        Timer(drop.after, () => _setCallOnline(false)),
+        Timer(drop.after + drop.length, () => _setCallOnline(true)),
+      ];
+    }
+    return const Result.ok(null);
+  }
+
+  void _setCallOnline(bool isOnline) {
+    _isCallOnline = isOnline;
+    notifyListeners();
+  }
+
+  @override
+  Future<Result<Message>> endCall({
+    required String chatId,
+    required Duration duration,
+  }) async {
+    for (final timer in _callDropTimers) {
+      timer.cancel();
+    }
+    _isCallOnline = true;
+    await Future<void>.delayed(latency);
+    return Result.ok(
+      _record(chatId, '', isFromYou: true, callDuration: duration),
+    );
+  }
+
+  @override
   Future<Result<Message>> getReply(String chatId) async {
     await Future<void>.delayed(replyDelay);
     if (_replyFailures.isNotEmpty) {
@@ -184,6 +238,7 @@ class ChatRepositoryLocal extends ChatRepository {
     required bool isFromYou,
     List<String> imagePaths = const [],
     String? postId,
+    Duration? callDuration,
   }) {
     final message = Message(
       id: 'local-${_nextId++}',
@@ -192,6 +247,7 @@ class ChatRepositoryLocal extends ChatRepository {
       isFromYou: isFromYou,
       imagePaths: List.unmodifiable(imagePaths),
       postId: postId,
+      callDuration: callDuration,
     );
     _messages = {
       ..._messages,
@@ -207,6 +263,8 @@ class ChatRepositoryLocal extends ChatRepository {
                 friendVoice: chat.friendVoice,
                 lastMessage: text.isNotEmpty
                     ? text
+                    : callDuration != null
+                    ? 'Voice call'
                     : imagePaths.isNotEmpty
                     ? 'Shared a photo'
                     : 'Replied to a post',

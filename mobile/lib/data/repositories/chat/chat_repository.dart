@@ -45,6 +45,19 @@ abstract class ChatRepository extends ChangeNotifier {
 
   Future<Result<void>> openPhotoSettings();
 
+  /// Rings the friend and completes once they pick up.
+  Future<Result<void>> startCall(String chatId);
+
+  /// False while a picked-up call has lost its connection. Listeners hear
+  /// when it drops and when it comes back.
+  bool get isCallOnline;
+
+  /// Records a finished voice call in the chat and returns the record.
+  Future<Result<Message>> endCall({
+    required String chatId,
+    required Duration duration,
+  });
+
   /// Waits for the friend to answer the latest message.
   Future<Result<Message>> getReply(String chatId);
 }

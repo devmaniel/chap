@@ -7,6 +7,7 @@ class Message {
     required this.isFromYou,
     this.imagePaths = const [],
     this.postId,
+    this.callDuration,
   });
 
   final String id;
@@ -19,4 +20,7 @@ class Message {
 
   /// The friend's post this message replies to.
   final String? postId;
+
+  /// Set when this is the record of a voice call: how long it lasted.
+  final Duration? callDuration;
 }

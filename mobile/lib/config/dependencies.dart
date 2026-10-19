@@ -40,6 +40,17 @@ List<SingleChildWidget> get providers => [
           'reply-error' => [Exception('Sample reply failure')],
           _ => const [],
         },
+        callFailures: switch (const String.fromEnvironment('CHAT_SCENARIO')) {
+          'call-error' => [Exception('Sample call failure')],
+          _ => const [],
+        },
+        callDrop: switch (const String.fromEnvironment('CHAT_SCENARIO')) {
+          'call-offline' => (
+            after: const Duration(seconds: 5),
+            length: const Duration(seconds: 6),
+          ),
+          _ => null,
+        },
       );
     },
   ),

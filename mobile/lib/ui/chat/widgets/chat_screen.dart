@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../routing/routes.dart';
 import '../../core/themes/dimens.dart';
 import 'chat_header.dart';
 import '../view_model/chat_viewmodel.dart';
@@ -49,6 +51,11 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_scrollController.hasClients) _scrollController.jumpTo(0);
   }
 
+  Future<void> _call() async {
+    await context.push(Routes.call(widget.viewModel.chat!.id));
+    widget.viewModel.refreshMessages();
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -66,7 +73,7 @@ class _ChatScreenState extends State<ChatScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              ChatHeader(chat: viewModel.chat),
+              ChatHeader(chat: viewModel.chat, onCall: _call),
               Expanded(child: _thread(context)),
               if (viewModel.chat != null && !viewModel.load.running)
                 ChatComposer(
@@ -167,6 +174,7 @@ class _ChatScreenState extends State<ChatScreen> {
           portraitAsset: chat.portraitAsset,
           animateReply: message.id == viewModel.revealingMessageId,
           onRevealComplete: viewModel.finishReveal,
+          onCallAgain: _call,
         ),
       if (viewModel.pending case final pending?)
         MessageBubble(

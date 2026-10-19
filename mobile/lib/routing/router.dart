@@ -7,6 +7,8 @@ import '../ui/auth/view_model/sign_in_viewmodel.dart';
 import '../ui/auth/view_model/sign_up_viewmodel.dart';
 import '../ui/auth/widgets/sign_in_screen.dart';
 import '../ui/auth/widgets/sign_up_screen.dart';
+import '../ui/call/view_model/call_viewmodel.dart';
+import '../ui/call/widgets/call_screen.dart';
 import '../ui/chat/view_model/chat_viewmodel.dart';
 import '../ui/chat/widgets/chat_screen.dart';
 import '../ui/chats/view_model/chats_viewmodel.dart';
@@ -70,6 +72,17 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               ),
             ),
           ),
+          routes: [
+            GoRoute(
+              path: 'call',
+              builder: (context, state) => CallScreen(
+                viewModel: CallViewModel(
+                  chatId: state.pathParameters['id']!,
+                  chatRepository: context.read(),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     ),
