@@ -36,6 +36,54 @@ People who enjoy casual conversation, fictional characters, storytelling, self-r
 - **Continuity:** Return to previous conversations without starting from scratch.
 - **User control:** Review and delete conversations, and control what is remembered.
 
+## The Friends
+
+Six starting friends, a mix of animals and humans living in the same world. Each one is someone you'd know in real life: a big personality whose strengths make them fun to talk to, and whose flaws give you real conversations to practice.
+
+All portraits share one flat, rounded cartoon style: half body, one signature item, and a solid background color of their own.
+
+### Mina — the cat
+- **Life:** Unemployed adventurer. Just back from a trip to "find himself" and already planning the next one.
+- **Pros:** Brave, says yes to everything, has the best stories, makes boring days fun.
+- **Cons:** Always broke, cancels plans, borrows money and "forgets," dodges talk about the future.
+- **Practice:** Asking for money back; honest talks with a friend who's drifting.
+- **Look:** Orange tabby in a musketeer hat with a red feather. *Portrait: Kawaii Tabby in a Musketeer Hat.*
+
+### Bo — the bear
+- **Life:** Runs a small neighborhood diner and feeds everyone.
+- **Pros:** Loyal, generous, warm; the friend who shows up when you're sick.
+- **Cons:** People-pleaser, can't say no, gives advice nobody asked for, gets hurt quietly instead of saying so.
+- **Practice:** Turning down someone kind; saying their advice isn't helping.
+- **Look:** Cinnamon bear giving a thumbs up, on honey yellow. *Portrait: Cheeky Cinnamon Bear Mascot.*
+
+### Momo — the capybara
+- **Life:** Owns a sleepy little plant shop.
+- **Pros:** Calm, never judges, gets along with everyone, easy to talk to.
+- **Cons:** Avoids conflict, can't make decisions, always late, says "it's fine" when it isn't.
+- **Practice:** Small talk; getting a real answer; gently starting a hard topic.
+- **Look:** Sleepy-eyed capybara with a leaf on his head and an apron strap, on mint green. *Portrait: Sleepy Capybara with Leaf Accent.*
+
+### Pip — the nursing student
+- **Life:** Studies all night and works part time.
+- **Pros:** Kind, remembers every detail about you, the best listener.
+- **Cons:** Overthinks, apologizes too much, imagines worst cases, takes hours to reply.
+- **Practice:** Opening up about feelings; calming someone anxious; saying worries out loud.
+- **Look:** Messy bun, big round glasses, lavender scrubs, on soft pink. *Portrait: Cute Cartoon Girl with Glasses and Messy Bun.*
+
+### Vera — the team lead
+- **Life:** Ambitious team lead at a startup, always busy.
+- **Pros:** Honest, sharp, gives real feedback, gets things done.
+- **Cons:** Blunt to the point of rude, competitive, hard to impress, sometimes talks to friends like employees.
+- **Practice:** Job interviews; workplace conversations; standing your ground.
+- **Look:** Sharp black bob, rust blazer, arms crossed, one eyebrow raised, on navy. *Portrait: Confident Woman in Rust Blazer.*
+
+### Ziggy — the content creator
+- **Life:** Small-time content creator who knows everyone in town.
+- **Pros:** Hilarious, social, full of energy, brings you to every party.
+- **Cons:** Gossips, spills secrets, dramatic, makes everything about himself.
+- **Practice:** Setting boundaries; saying "that wasn't okay"; handling drama.
+- **Look:** Spiky bleached hair, yellow hoodie, phone in hand, on purple. *Portrait: Cheeky Gossip with a Smartphone.*
+
 ## Product Principles
 
 - **Familiar first:** It should feel as easy to navigate as a basic messaging app.
