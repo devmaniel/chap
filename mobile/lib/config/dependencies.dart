@@ -112,26 +112,26 @@ List<Chat> _sampleChats(DateTime now) => [
     id: 'mina',
     friendName: 'Mina',
     portraitAsset: 'assets/images/portrait_mina.png',
-    friendVoice: 'Warm & gentle',
+    friendVoice: 'Bright & bold',
     lastMessage: 'I finally found that little bookshop.',
     lastMessageAt: now.subtract(const Duration(minutes: 12)),
     unreadCount: 2,
   ),
   Chat(
-    id: 'kai',
-    friendName: 'Kai',
-    portraitAsset: 'assets/images/portrait_kai.png',
-    friendVoice: 'Calm & relaxed',
-    lastMessage: 'One song for a rainy walk. Your pick?',
+    id: 'bo',
+    friendName: 'Bo',
+    portraitAsset: 'assets/images/portrait_bo.png',
+    friendVoice: 'Big & cozy',
+    lastMessage: 'Saved you a plate. Coming by tonight?',
     lastMessageAt: now.subtract(const Duration(hours: 1)),
     unreadCount: 1,
   ),
   Chat(
-    id: 'sol',
-    friendName: 'Sol',
-    portraitAsset: 'assets/images/portrait_sol.png',
-    friendVoice: 'Bright & playful',
-    lastMessage: 'Tell me how your sketch turned out.',
+    id: 'pip',
+    friendName: 'Pip',
+    portraitAsset: 'assets/images/portrait_pip.png',
+    friendVoice: 'Soft & careful',
+    lastMessage: 'Sorry, just saw this! Are we okay?',
     lastMessageAt: now.subtract(const Duration(days: 1)),
     unreadCount: 0,
   ),
@@ -161,17 +161,17 @@ Map<String, List<Message>> _sampleMessages(DateTime now) {
         minaAgo,
       ),
     ],
-    'kai': [
+    'bo': [
       message(
-        'kai-1',
-        'One song for a rainy walk. Your pick?',
+        'bo-1',
+        'Saved you a plate. Coming by tonight?',
         const Duration(hours: 1),
       ),
     ],
-    'sol': [
+    'pip': [
       message(
-        'sol-1',
-        'Tell me how your sketch turned out.',
+        'pip-1',
+        'Sorry, just saw this! Are we okay?',
         const Duration(days: 1),
       ),
     ],
@@ -191,71 +191,106 @@ List<Character> _sampleCharacters(DateTime now) {
       id: 'mina',
       name: 'Mina',
       portraitAsset: 'assets/images/portrait_mina.png',
-      tagline: 'A curious soul who finds little stories in everyday things.',
+      tagline: 'Unemployed adventurer, always planning the next trip.',
       bio:
-          'A curious soul who finds little stories in everyday things. '
-          'Usually carrying a sketchbook.',
-      interests: const ['Art', 'Coffee', 'Small talk'],
-      home: 'Old town',
+          'Unemployed adventurer. Just back from a trip to find himself, '
+          'already planning the next one.',
+      interests: const ['Travel', 'Food', 'Stories'],
+      home: 'On the road',
       postCount: 24,
-      friendIds: const ['kai', 'sol'],
+      friendIds: const ['bo', 'pip'],
       firstHello:
-          'I took the long way home and found a tiny bookshop tucked between '
-          'two cafés. The best kind of detour.',
-      voice: 'Warm & gentle',
-      profilePicture: picture('mina', 'New sketchbook, new me.', 87),
+          'I missed my bus, so I hitched a ride to the coast instead. '
+          'Best mistake this week.',
+      voice: 'Bright & bold',
+      profilePicture: picture('mina', 'New hat, new me.', 87),
       isFriend: true,
     ),
     Character(
-      id: 'kai',
-      name: 'Kai',
-      portraitAsset: 'assets/images/portrait_kai.png',
-      tagline: 'Your easygoing music nerd.',
-      bio: 'Your easygoing music nerd. Always has a song for the mood.',
-      interests: const ['Music', 'Ideas', 'Small talk'],
-      home: 'Record shop',
+      id: 'bo',
+      name: 'Bo',
+      portraitAsset: 'assets/images/portrait_bo.png',
+      tagline: 'Runs a little diner and feeds everyone.',
+      bio:
+          'Runs a little diner and feeds everyone. The friend who shows up '
+          'with soup when you’re sick.',
+      interests: const ['Food', 'Advice', 'Family'],
+      home: 'Corner diner',
+      postCount: 0,
+      friendIds: const ['mina', 'momo'],
+      firstHello: 'Saved you a plate. Coming by tonight?',
+      voice: 'Big & cozy',
+      profilePicture: picture('bo', 'Apron on, grill hot.', 58),
+      isFriend: true,
+    ),
+    Character(
+      id: 'pip',
+      name: 'Pip',
+      portraitAsset: 'assets/images/portrait_pip.png',
+      tagline:
+          'Nursing student who studies all night and remembers every little '
+          'thing you tell her.',
+      bio:
+          'Studies all night, works part time, and remembers every little '
+          'thing you tell her.',
+      interests: const ['Study', 'Health', 'Feelings'],
+      home: 'Campus',
+      postCount: 0,
+      friendIds: const ['vera'],
+      firstHello: 'Sorry, just saw this! Are we okay?',
+      voice: 'Soft & careful',
+      profilePicture: picture('pip', 'Third coffee. Still studying.', 41),
+      isFriend: true,
+    ),
+    Character(
+      id: 'vera',
+      name: 'Vera',
+      portraitAsset: 'assets/images/portrait_vera.png',
+      tagline: 'Startup team lead. Honest, even when it stings.',
+      bio:
+          'Ambitious startup team lead. Ask her for feedback only if you want '
+          'the truth.',
+      interests: const ['Work', 'Career', 'Goals'],
+      home: 'Downtown',
+      postCount: 0,
+      friendIds: const ['mina', 'bo'],
+      firstHello:
+          'Interviewed twenty people this week. Hired two. '
+          'Bring your best answer.',
+      voice: 'Sharp & direct',
+      profilePicture: picture('vera', 'New role, same coffee.', 112),
+    ),
+    Character(
+      id: 'momo',
+      name: 'Momo',
+      portraitAsset: 'assets/images/portrait_momo.png',
+      tagline: 'Plant shop owner who is never in a hurry.',
+      bio:
+          'Owns a sleepy little plant shop. Never judges, never rushes, and '
+          'says “it’s fine” a lot.',
+      interests: const ['Plants', 'Chill', 'Small talk'],
+      home: 'Plant shop',
+      postCount: 0,
+      friendIds: const ['bo'],
+      firstHello: 'No rush. The ferns and I will be here.',
+      voice: 'Slow & mellow',
+      profilePicture: picture('momo', 'Found a new leaf. Wearing it.', 73),
+    ),
+    Character(
+      id: 'ziggy',
+      name: 'Ziggy',
+      portraitAsset: 'assets/images/portrait_ziggy.png',
+      tagline: 'Content creator who knows everyone in town.',
+      bio:
+          'Small-time content creator who knows everyone in town. Brings you '
+          'to every party, and every secret.',
+      interests: const ['Parties', 'Trends', 'Gossip'],
+      home: 'Everywhere',
       postCount: 0,
       friendIds: const ['mina'],
-      firstHello: 'One song for a rainy walk. Your pick?',
-      voice: 'Calm & relaxed',
-      profilePicture: picture('kai', 'Headphones on, world off.', 64),
-      isFriend: true,
-    ),
-    Character(
-      id: 'sol',
-      name: 'Sol',
-      portraitAsset: 'assets/images/portrait_sol.png',
-      tagline:
-          'A thoughtful book lover with a soft spot for big questions and '
-          'wonderfully ordinary days..',
-      bio:
-          'Hums while cooking, collects old records, and always has a song '
-          'for the mood.',
-      interests: const ['Books', 'Ideas', 'Art'],
-      home: 'Harbor flat',
-      postCount: 0,
-      friendIds: const ['lumi'],
-      firstHello: 'Tell me how your sketch turned out.',
-      voice: 'Bright & playful',
-      profilePicture: picture('sol', 'Harbor light, best light.', 41),
-    ),
-    Character(
-      id: 'lumi',
-      name: 'Lumi',
-      portraitAsset: 'assets/images/portrait_lumi.png',
-      tagline:
-          'An imaginative storyteller who turns “what if” into a tiny '
-          'adventure.',
-      bio:
-          'An imaginative storyteller who turns “what if” into a tiny '
-          'adventure. Bring your wildest ideas.',
-      interests: const ['Stories', 'Art', 'Ideas'],
-      home: 'Moon garden',
-      postCount: 31,
-      friendIds: const ['mina', 'kai'],
-      firstHello: 'What if the moon kept a diary? I think I found a page.',
-      voice: 'Soft & dreamy',
-      profilePicture: picture('lumi', 'Moonlight suits me.', 112),
+      firstHello: 'Okay, you did NOT hear this from me…',
+      voice: 'Loud & lively',
+      profilePicture: picture('ziggy', 'New hair, who dis.', 205),
     ),
   ];
 }
@@ -345,25 +380,6 @@ Map<String, List<Post>> _samplePosts(DateTime now) {
             'walk?',
         postedAt: ago(const Duration(days: 4, hours: 2)),
         likeCount: 54,
-      ),
-    ],
-    'lumi': [
-      Post(
-        id: 'lumi-1',
-        characterId: 'lumi',
-        text:
-            'A door appeared in the garden this morning. I have not opened it '
-            'yet. Should I?',
-        postedAt: ago(const Duration(hours: 1)),
-        place: 'Moon garden',
-        photos: const [
-          PostPhoto(
-            scene: PhotoScene.dusk,
-            shape: PhotoShape.portrait,
-            description: 'purple dusk over a garden',
-          ),
-        ],
-        likeCount: 210,
       ),
     ],
   };

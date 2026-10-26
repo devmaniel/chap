@@ -17,7 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
 class _PhotoLibrary extends PhotoLibraryService {
   static final paths = [
     File('assets/images/portrait_mina.png').absolute.path,
-    File('assets/images/portrait_kai.png').absolute.path,
+    File('assets/images/portrait_bo.png').absolute.path,
   ];
 
   @override

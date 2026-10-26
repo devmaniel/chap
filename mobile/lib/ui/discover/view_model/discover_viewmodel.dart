@@ -13,7 +13,7 @@ class DiscoverViewModel extends ChangeNotifier {
   }
 
   static const allFilter = 'All';
-  static const filters = [allFilter, 'Art', 'Music', 'Stories', 'Ideas'];
+  static const filters = [allFilter, 'Food', 'Work', 'Study', 'Parties'];
 
   final CharacterRepository _characterRepository;
 

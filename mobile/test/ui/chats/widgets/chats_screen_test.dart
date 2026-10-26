@@ -25,9 +25,9 @@ void main() {
           unreadCount: 2,
         ),
         Chat(
-          id: 'sol',
-          friendName: 'Sol',
-          portraitAsset: 'assets/images/portrait_sol.png',
+          id: 'pip',
+          friendName: 'Pip',
+          portraitAsset: 'assets/images/portrait_pip.png',
           friendVoice: 'Warm & gentle',
           lastMessage: 'Tell me how your sketch turned out.',
           lastMessageAt: now.subtract(const Duration(days: 1)),
@@ -54,7 +54,7 @@ void main() {
     expect(find.text('Mina'), findsOneWidget);
     expect(find.text('12m'), findsOneWidget);
     expect(find.text('2'), findsOneWidget);
-    expect(find.text('Sol'), findsOneWidget);
+    expect(find.text('Pip'), findsOneWidget);
     expect(find.text('Yesterday'), findsOneWidget);
     expect(find.text('Meet someone new'), findsOneWidget);
     for (final tab in ['CHATS', 'DISCOVER', 'FRIENDS']) {
@@ -74,7 +74,7 @@ void main() {
     await tester.enterText(find.byType(TextField), 'book');
     await tester.pump();
     expect(find.text('1 CHAT'), findsOneWidget);
-    expect(find.text('Sol'), findsNothing);
+    expect(find.text('Pip'), findsNothing);
 
     await tester.enterText(find.byType(TextField), 'zebra');
     await tester.pump();
@@ -84,7 +84,7 @@ void main() {
     await tester.tap(find.text('Cancel'));
     await tester.pump();
     expect(find.text('Chats'), findsOneWidget);
-    expect(find.text('Sol'), findsOneWidget);
+    expect(find.text('Pip'), findsOneWidget);
   });
 
   testWidgets('survives text scale 2.0 at 360 wide', (tester) async {

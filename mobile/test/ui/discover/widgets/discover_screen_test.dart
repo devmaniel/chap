@@ -37,8 +37,8 @@ void main() {
       characterRepository: CharacterRepositoryLocal(
         latency: Duration.zero,
         characters: [
-          character('mina', 'Mina', ['Art', 'Coffee']),
-          character('kai', 'Kai', ['Music', 'Ideas']),
+          character('mina', 'Mina', ['Travel', 'Food']),
+          character('bo', 'Bo', ['Advice', 'Family']),
         ],
       ),
     );
@@ -52,20 +52,20 @@ void main() {
 
     expect(find.text('Discover'), findsWidgets);
     expect(find.text('Mina'), findsOneWidget);
-    expect(find.text('Kai'), findsOneWidget);
-    expect(find.text('Art · Coffee'), findsOneWidget);
+    expect(find.text('Bo'), findsOneWidget);
+    expect(find.text('Travel · Food'), findsOneWidget);
 
-    await tester.tap(find.text('Art'));
+    await tester.tap(find.text('Food'));
     await tester.pump();
 
-    expect(viewModel.filter, 'Art');
+    expect(viewModel.filter, 'Food');
     expect(find.text('Mina'), findsOneWidget);
-    expect(find.text('Kai'), findsNothing);
+    expect(find.text('Bo'), findsNothing);
 
     await tester.tap(find.text('All'));
     await tester.pump();
 
-    expect(find.text('Kai'), findsOneWidget);
+    expect(find.text('Bo'), findsOneWidget);
   });
 
   testWidgets('a failed load shows Retry, which brings the cards', (

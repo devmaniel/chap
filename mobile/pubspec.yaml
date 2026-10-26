@@ -28,9 +28,11 @@ flutter:
     - assets/images/splash.png
     - assets/images/otter_peek.png
     - assets/images/portrait_mina.png
-    - assets/images/portrait_kai.png
-    - assets/images/portrait_sol.png
-    - assets/images/portrait_lumi.png
+    - assets/images/portrait_bo.png
+    - assets/images/portrait_pip.png
+    - assets/images/portrait_vera.png
+    - assets/images/portrait_momo.png
+    - assets/images/portrait_ziggy.png
     - assets/images/wordmark.png
     - assets/images/call_cat.png
     - assets/icons/

@@ -14,8 +14,8 @@ void main() {
         latency: Duration.zero,
         characters: [
           character('mina', isFriend: true),
-          character('kai', isFriend: true),
-          character('lumi'),
+          character('bo', isFriend: true),
+          character('vera'),
         ],
       ),
     );
@@ -29,7 +29,7 @@ void main() {
 
     expect(find.text('2 friends'), findsOneWidget);
     expect(find.text('mina'), findsOneWidget);
-    expect(find.text('kai'), findsOneWidget);
-    expect(find.text('lumi'), findsNothing);
+    expect(find.text('bo'), findsOneWidget);
+    expect(find.text('vera'), findsNothing);
   });
 }

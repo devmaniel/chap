@@ -10,9 +10,11 @@ import '../../../domain/models/post/post.dart';
 abstract final class Illustrations {
   static const _tones = {
     'mina': Color(0xFFEDCFB9),
-    'kai': Color(0xFFD8D4ED),
-    'sol': Color(0xFFDEEBFF),
-    'lumi': Color(0xFFECD9D9),
+    'bo': Color(0xFFFDD960),
+    'pip': Color(0xFFFCA7B6),
+    'vera': Color(0xFF0B326C),
+    'momo': Color(0xFF99F1B7),
+    'ziggy': Color(0xFF8757DF),
   };
 
   static const _fallbackTone = Color(0xFFFFE3D1);
@@ -26,15 +28,15 @@ abstract final class Illustrations {
       Color(0xFFFF9F7A),
       Color(0xFFF0708A),
     ]),
-    'lumi' => _css(135, const [
-      Color(0xFFF6D4FF),
-      Color(0xFFB9A4F5),
-      Color(0xFF7F8CF0),
+    'vera' => _css(135, const [
+      Color(0xFFC9D6F2),
+      Color(0xFF5D7FC4),
+      Color(0xFF0B326C),
     ]),
-    'sol' => _css(135, const [
-      Color(0xFFC9F1FF),
-      Color(0xFF7CC8F5),
-      Color(0xFF4F8FE0),
+    'pip' => _css(135, const [
+      Color(0xFFFFE3EA),
+      Color(0xFFFCA7B6),
+      Color(0xFFF07A96),
     ]),
     _ => _css(135, List.filled(3, tone(characterId))),
   };
