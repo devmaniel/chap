@@ -33,11 +33,13 @@ class ChatViewModel extends ChangeNotifier {
       command.addListener(_changed);
     }
     _chat = _chatRepository.cachedChat(_chatId);
-    _messages = _chatRepository.cachedMessages(_chatId) ?? const [];
+    final messages = _chatRepository.cachedMessages(_chatId);
+    _messages = messages ?? const [];
     final draft = _chatRepository.draftFor(_chatId);
     _draft = draft?.text ?? '';
     _draftImages = draft?.imagePaths ?? const [];
-    if (_chat == null) load.execute();
+    // The inbox knows the chat but not its messages until they're fetched.
+    if (_chat == null || messages == null) load.execute();
   }
 
   final String _chatId;
@@ -78,9 +80,14 @@ class ChatViewModel extends ChangeNotifier {
   double scrollOffset = 0;
   String get draft => _draft;
 
+  /// Showing the chat marks it read.
   void setVisible(bool value) {
     _isVisible = value;
-    if (!value) _revealingMessageId = null;
+    if (value) {
+      unawaited(_chatRepository.markRead(_chatId));
+    } else {
+      _revealingMessageId = null;
+    }
   }
 
   Chat? get chat => _chat;
@@ -265,6 +272,7 @@ class ChatViewModel extends ChangeNotifier {
         _messages = [..._messages, value];
         _isOffline = false;
         _revealingMessageId = _isVisible ? value.id : null;
+        if (_isVisible) unawaited(_chatRepository.markRead(_chatId));
         return const Result.ok(null);
       case Error(:final error):
         _waitForConnection(error, reply);

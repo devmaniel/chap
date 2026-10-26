@@ -7,9 +7,9 @@ import '../../../domain/models/chat/chat.dart';
 import '../../../utils/command.dart';
 import '../../../utils/result.dart';
 
-/// A mock voice call: no audio yet. It rings until the friend picks up, then
-/// the friend and you take turns talking on a fixed rhythm so every call
-/// state shows.
+/// A voice call. It rings until the friend picks up. Who is talking, mute and
+/// speaker are still simulated: the friend and you take turns on a fixed
+/// rhythm, and the toggles change only what the screen shows.
 class CallViewModel extends ChangeNotifier {
   CallViewModel({
     required String chatId,

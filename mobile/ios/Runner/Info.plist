@@ -28,6 +28,8 @@
 		<true/>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Choose photos to share in your chats.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Talk with your friends on voice calls.</string>
 		<key>UIApplicationSceneManifest</key>
 		<dict>
 			<key>UIApplicationSupportsMultipleScenes</key>

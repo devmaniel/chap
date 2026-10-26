@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:app/data/repositories/character/character_repository_local.dart';
 import 'package:app/data/repositories/auth/auth_repository.dart';
 import 'package:app/data/repositories/chat/chat_repository_local.dart';
+import 'package:app/data/repositories/chat/chat_repository_remote.dart';
+import 'package:app/data/services/api_service.dart';
 import 'package:app/domain/models/chat/chat.dart';
 import 'package:app/ui/chat/view_model/chat_viewmodel.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 
 void main() {
   ChatRepositoryLocal repository({
@@ -209,5 +215,79 @@ void main() {
     model.attachPost('mina-1');
     model.removePost();
     expect(model.canSend, isFalse);
+  });
+
+  test('a chat known from the inbox loads its messages and is marked read '
+      'when shown and after each reply', () async {
+    final hello = {
+      'id': 'm1',
+      'text': 'Hi!',
+      'sentAt': '2026-10-26T09:00:00Z',
+      'isFromYou': false,
+      'postId': null,
+      'imageRefs': <String>[],
+      'callDurationSeconds': null,
+    };
+    final chat = {
+      'id': 'mina',
+      'friendName': 'Mina',
+      'friendVoice': 'Bright',
+      'lastMessage': hello,
+      'unreadCount': 1,
+    };
+    final requests = <String>[];
+    final repository = ChatRepositoryRemote(
+      apiService: ApiService(
+        client: MockClient((request) async {
+          final key = '${request.method} ${request.url.path}';
+          requests.add(key);
+          return switch (key) {
+            'GET /api/chats' => http.Response(jsonEncode([chat]), 200),
+            'GET /api/chats/mina' => http.Response(jsonEncode(chat), 200),
+            'GET /api/chats/mina/messages' => http.Response(
+              jsonEncode([hello]),
+              200,
+            ),
+            'POST /api/chats/mina/messages' => http.Response(
+              jsonEncode({...hello, 'id': 'm2', 'isFromYou': true}),
+              201,
+            ),
+            'POST /api/chats/mina/reply' => http.Response(
+              jsonEncode({...hello, 'id': 'm3', 'text': 'Hey'}),
+              200,
+            ),
+            _ => http.Response('', 204),
+          };
+        }),
+        baseUrl: Uri.parse('http://server.test'),
+      ),
+      portraitAssets: const {'mina': 'assets/images/portrait_mina.png'},
+    );
+    await repository.getChats();
+
+    final model = ChatViewModel(
+      chatId: 'mina',
+      chatRepository: repository,
+      characterRepository: CharacterRepositoryLocal(),
+    );
+    addTearDown(model.dispose);
+    model.setVisible(true);
+    await pumpEventQueue();
+
+    expect(model.messages.map((m) => m.text), ['Hi!']);
+    expect(repository.cachedChat('mina')!.unreadCount, 0);
+
+    requests.clear();
+    model.setDraft('Hello');
+    model.submit();
+    await pumpEventQueue();
+
+    expect(model.messages, hasLength(3));
+    expect(requests, [
+      'POST /api/chats/mina/messages',
+      'POST /api/chats/mina/reply',
+      'POST /api/chats/mina/read',
+    ]);
+    expect(repository.cachedChat('mina')!.unreadCount, 0);
   });
 }

@@ -2,14 +2,12 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 import '../data/repositories/auth/auth_repository.dart';
-import '../data/repositories/auth/auth_repository_local.dart';
+import '../data/repositories/auth/auth_repository_remote.dart';
 import '../data/repositories/character/character_repository.dart';
-import '../data/repositories/character/character_repository_local.dart';
+import '../data/repositories/character/character_repository_remote.dart';
 import '../data/repositories/chat/chat_repository.dart';
-import '../data/repositories/chat/chat_repository_local.dart';
-import '../domain/models/character/character.dart';
-import '../domain/models/chat/chat.dart';
-import '../domain/models/message/message.dart';
+import '../data/repositories/chat/chat_repository_remote.dart';
+import '../data/services/api_service.dart';
 import '../domain/models/post/post.dart';
 import '../ui/chat/view_model/chat_viewmodel.dart';
 import '../ui/chats/view_model/chats_viewmodel.dart';
@@ -17,55 +15,30 @@ import '../ui/discover/view_model/discover_viewmodel.dart';
 import '../ui/friends/view_model/friends_viewmodel.dart';
 import '../ui/profile/view_model/profile_viewmodel.dart';
 
-/// Swap the local repositories for remote implementations once the server exists.
+/// The app-wide services and repositories, backed by the Chap server.
 List<SingleChildWidget> get providers => [
+  Provider<ApiService>(create: (_) => ApiService()),
   ChangeNotifierProvider<AuthRepository>(
-    create: (_) => AuthRepositoryLocal(
-      // Test account. Emails are stored lowercase.
-      passwordsByEmail: const {'melco@example.com': 'Password123'},
-    ),
+    create: (context) => AuthRepositoryRemote(apiService: context.read()),
   ),
   ChangeNotifierProvider<ChatRepository>(
-    create: (_) {
-      final now = DateTime.now();
-      return ChatRepositoryLocal(
-        chats: _sampleChats(now),
-        messages: _sampleMessages(now),
-        sendFailures: switch (const String.fromEnvironment('CHAT_SCENARIO')) {
-          'send-error' => [Exception('Sample send failure')],
-          'offline' => [const OfflineException(), const OfflineException()],
-          _ => const [],
-        },
-        replyFailures: switch (const String.fromEnvironment('CHAT_SCENARIO')) {
-          'reply-error' => [Exception('Sample reply failure')],
-          _ => const [],
-        },
-        callFailures: switch (const String.fromEnvironment('CHAT_SCENARIO')) {
-          'call-error' => [Exception('Sample call failure')],
-          _ => const [],
-        },
-        callDrop: switch (const String.fromEnvironment('CHAT_SCENARIO')) {
-          'call-offline' => (
-            after: const Duration(seconds: 5),
-            length: const Duration(seconds: 6),
-          ),
-          _ => null,
-        },
-      );
-    },
+    create: (context) => ChatRepositoryRemote(
+      apiService: context.read(),
+      portraitAssets: {
+        for (final MapEntry(:key, :value) in _bundledCharacters(
+          DateTime.now(),
+        ).entries)
+          key: value.portraitAsset,
+      },
+    ),
   ),
   ChangeNotifierProvider<CharacterRepository>(
-    create: (_) {
+    create: (context) {
       final now = DateTime.now();
-      return CharacterRepositoryLocal(
-        characters: _sampleCharacters(now),
+      return CharacterRepositoryRemote(
+        apiService: context.read(),
+        bundled: _bundledCharacters(now),
         posts: _samplePosts(now),
-        loadFailures: switch (const String.fromEnvironment(
-          'CHARACTER_SCENARIO',
-        )) {
-          'load-error' => [Exception('Sample load failure')],
-          _ => const [],
-        },
       );
     },
   ),
@@ -107,78 +80,9 @@ List<SingleChildWidget> get chatViewModelProviders => [
   ),
 ];
 
-List<Chat> _sampleChats(DateTime now) => [
-  Chat(
-    id: 'mina',
-    friendName: 'Mina',
-    portraitAsset: 'assets/images/portrait_mina.png',
-    friendVoice: 'Bright & bold',
-    lastMessage: 'I finally found that little bookshop.',
-    lastMessageAt: now.subtract(const Duration(minutes: 12)),
-    unreadCount: 2,
-  ),
-  Chat(
-    id: 'bo',
-    friendName: 'Bo',
-    portraitAsset: 'assets/images/portrait_bo.png',
-    friendVoice: 'Big & cozy',
-    lastMessage: 'Saved you a plate. Coming by tonight?',
-    lastMessageAt: now.subtract(const Duration(hours: 1)),
-    unreadCount: 1,
-  ),
-  Chat(
-    id: 'pip',
-    friendName: 'Pip',
-    portraitAsset: 'assets/images/portrait_pip.png',
-    friendVoice: 'Soft & careful',
-    lastMessage: 'Sorry, just saw this! Are we okay?',
-    lastMessageAt: now.subtract(const Duration(days: 1)),
-    unreadCount: 0,
-  ),
-];
-
-Map<String, List<Message>> _sampleMessages(DateTime now) {
-  Message message(String id, String text, Duration ago, {bool you = false}) =>
-      Message(id: id, text: text, sentAt: now.subtract(ago), isFromYou: you);
-  const minaAgo = Duration(minutes: 12);
-  return {
-    'mina': [
-      message(
-        'mina-1',
-        'I needed a little break from the usual today.',
-        minaAgo,
-        you: true,
-      ),
-      message(
-        'mina-2',
-        'I took the long way home and found a tiny bookshop tucked between '
-            'two cafés. The best kind of detour.',
-        minaAgo,
-      ),
-      message(
-        'mina-3',
-        'What about you? Find anything worth a second look?',
-        minaAgo,
-      ),
-    ],
-    'bo': [
-      message(
-        'bo-1',
-        'Saved you a plate. Coming by tonight?',
-        const Duration(hours: 1),
-      ),
-    ],
-    'pip': [
-      message(
-        'pip-1',
-        'Sorry, just saw this! Are we okay?',
-        const Duration(days: 1),
-      ),
-    ],
-  };
-}
-
-List<Character> _sampleCharacters(DateTime now) {
+/// What the app ships for each character, in Discover order. Profiles and
+/// friend status come from the server.
+Map<String, BundledCharacter> _bundledCharacters(DateTime now) {
   Post picture(String id, String caption, int likes) => Post(
     id: '$id-picture',
     characterId: id,
@@ -186,113 +90,44 @@ List<Character> _sampleCharacters(DateTime now) {
     postedAt: now.subtract(const Duration(days: 14)),
     likeCount: likes,
   );
-  return [
-    Character(
-      id: 'mina',
-      name: 'Mina',
+  return {
+    'mina': (
       portraitAsset: 'assets/images/portrait_mina.png',
-      tagline: 'Unemployed adventurer, always planning the next trip.',
-      bio:
-          'Unemployed adventurer. Just back from a trip to find himself, '
-          'already planning the next one.',
-      interests: const ['Travel', 'Food', 'Stories'],
-      home: 'On the road',
       postCount: 24,
       friendIds: const ['bo', 'pip'],
-      firstHello:
-          'I missed my bus, so I hitched a ride to the coast instead. '
-          'Best mistake this week.',
-      voice: 'Bright & bold',
       profilePicture: picture('mina', 'New hat, new me.', 87),
-      isFriend: true,
     ),
-    Character(
-      id: 'bo',
-      name: 'Bo',
+    'bo': (
       portraitAsset: 'assets/images/portrait_bo.png',
-      tagline: 'Runs a little diner and feeds everyone.',
-      bio:
-          'Runs a little diner and feeds everyone. The friend who shows up '
-          'with soup when you’re sick.',
-      interests: const ['Food', 'Advice', 'Family'],
-      home: 'Corner diner',
       postCount: 0,
       friendIds: const ['mina', 'momo'],
-      firstHello: 'Saved you a plate. Coming by tonight?',
-      voice: 'Big & cozy',
       profilePicture: picture('bo', 'Apron on, grill hot.', 58),
-      isFriend: true,
     ),
-    Character(
-      id: 'pip',
-      name: 'Pip',
+    'pip': (
       portraitAsset: 'assets/images/portrait_pip.png',
-      tagline:
-          'Nursing student who studies all night and remembers every little '
-          'thing you tell her.',
-      bio:
-          'Studies all night, works part time, and remembers every little '
-          'thing you tell her.',
-      interests: const ['Study', 'Health', 'Feelings'],
-      home: 'Campus',
       postCount: 0,
       friendIds: const ['vera'],
-      firstHello: 'Sorry, just saw this! Are we okay?',
-      voice: 'Soft & careful',
       profilePicture: picture('pip', 'Third coffee. Still studying.', 41),
-      isFriend: true,
     ),
-    Character(
-      id: 'vera',
-      name: 'Vera',
+    'vera': (
       portraitAsset: 'assets/images/portrait_vera.png',
-      tagline: 'Startup team lead. Honest, even when it stings.',
-      bio:
-          'Ambitious startup team lead. Ask her for feedback only if you want '
-          'the truth.',
-      interests: const ['Work', 'Career', 'Goals'],
-      home: 'Downtown',
       postCount: 0,
       friendIds: const ['mina', 'bo'],
-      firstHello:
-          'Interviewed twenty people this week. Hired two. '
-          'Bring your best answer.',
-      voice: 'Sharp & direct',
       profilePicture: picture('vera', 'New role, same coffee.', 112),
     ),
-    Character(
-      id: 'momo',
-      name: 'Momo',
+    'momo': (
       portraitAsset: 'assets/images/portrait_momo.png',
-      tagline: 'Plant shop owner who is never in a hurry.',
-      bio:
-          'Owns a sleepy little plant shop. Never judges, never rushes, and '
-          'says “it’s fine” a lot.',
-      interests: const ['Plants', 'Chill', 'Small talk'],
-      home: 'Plant shop',
       postCount: 0,
       friendIds: const ['bo'],
-      firstHello: 'No rush. The ferns and I will be here.',
-      voice: 'Slow & mellow',
       profilePicture: picture('momo', 'Found a new leaf. Wearing it.', 73),
     ),
-    Character(
-      id: 'ziggy',
-      name: 'Ziggy',
+    'ziggy': (
       portraitAsset: 'assets/images/portrait_ziggy.png',
-      tagline: 'Content creator who knows everyone in town.',
-      bio:
-          'Small-time content creator who knows everyone in town. Brings you '
-          'to every party, and every secret.',
-      interests: const ['Parties', 'Trends', 'Gossip'],
-      home: 'Everywhere',
       postCount: 0,
       friendIds: const ['mina'],
-      firstHello: 'Okay, you did NOT hear this from me…',
-      voice: 'Loud & lively',
       profilePicture: picture('ziggy', 'New hair, who dis.', 205),
     ),
-  ];
+  };
 }
 
 Map<String, List<Post>> _samplePosts(DateTime now) {

@@ -151,6 +151,28 @@ class ChatRepositoryLocal extends ChatRepository {
   }
 
   @override
+  Future<Result<void>> markRead(String chatId) async {
+    // Never notify synchronously: a chat screen calls this while building.
+    await Future<void>.value();
+    _chats = [
+      for (final chat in _chats)
+        chat.id == chatId
+            ? Chat(
+                id: chat.id,
+                friendName: chat.friendName,
+                portraitAsset: chat.portraitAsset,
+                friendVoice: chat.friendVoice,
+                lastMessage: chat.lastMessage,
+                lastMessageAt: chat.lastMessageAt,
+                unreadCount: 0,
+              )
+            : chat,
+    ];
+    notifyListeners();
+    return const Result.ok(null);
+  }
+
+  @override
   Future<Result<Message>> sendMessage({
     required String chatId,
     required String text,

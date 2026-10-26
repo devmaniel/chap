@@ -31,6 +31,9 @@ abstract class ChatRepository extends ChangeNotifier {
   /// The conversation, oldest first.
   Future<Result<List<Message>>> getMessages(String chatId);
 
+  /// Everything in the chat has been seen: its unread count drops to zero.
+  Future<Result<void>> markRead(String chatId);
+
   /// Delivers your message and returns it as stored.
   Future<Result<Message>> sendMessage({
     required String chatId,
@@ -68,4 +71,9 @@ final class ChatNotFoundException implements Exception {
 
 final class PhotoAccessDeniedException implements Exception {
   const PhotoAccessDeniedException();
+}
+
+/// A call can't start without the microphone.
+final class MicrophoneDeniedException implements Exception {
+  const MicrophoneDeniedException();
 }

@@ -125,34 +125,47 @@ class MessageBubble extends StatelessWidget {
                     ),
                   if (message.imagePaths.isNotEmpty)
                     LayoutBuilder(
-                      builder: (context, imageConstraints) => Wrap(
-                        spacing: Dimens.space2xs,
-                        runSpacing: Dimens.space2xs,
-                        children: [
-                          for (final (index, path)
-                              in message.imagePaths.indexed)
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(
-                                Dimens.photoRadius,
+                      builder: (context, imageConstraints) {
+                        final side = message.imagePaths.length == 1
+                            ? imageConstraints.maxWidth
+                            : (imageConstraints.maxWidth - Dimens.space2xs) / 2;
+                        return Wrap(
+                          spacing: Dimens.space2xs,
+                          runSpacing: Dimens.space2xs,
+                          children: [
+                            for (final (index, path)
+                                in message.imagePaths.indexed)
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  Dimens.photoRadius,
+                                ),
+                                child: Image.file(
+                                  File(path),
+                                  width: side,
+                                  height: side,
+                                  fit: BoxFit.cover,
+                                  semanticLabel: 'Photo ${index + 1}',
+                                  // The photo was deleted from the phone.
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Container(
+                                        width: side,
+                                        height: side,
+                                        color: colors.surfaceContainerHighest,
+                                        alignment: Alignment.center,
+                                        child: Semantics(
+                                          label:
+                                              'Photo ${index + 1} unavailable',
+                                          child: AppIcon(
+                                            AppIconName.image,
+                                            color: colors.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ),
+                                ),
                               ),
-                              child: Image.file(
-                                File(path),
-                                width: message.imagePaths.length == 1
-                                    ? imageConstraints.maxWidth
-                                    : (imageConstraints.maxWidth -
-                                              Dimens.space2xs) /
-                                          2,
-                                height: message.imagePaths.length == 1
-                                    ? imageConstraints.maxWidth
-                                    : (imageConstraints.maxWidth -
-                                              Dimens.space2xs) /
-                                          2,
-                                fit: BoxFit.cover,
-                                semanticLabel: 'Photo ${index + 1}',
-                              ),
-                            ),
-                        ],
-                      ),
+                          ],
+                        );
+                      },
                     ),
                   if (message.text.isNotEmpty) Text(message.text, style: style),
                 ],
