@@ -92,7 +92,7 @@ migration is authored against a schema that exists nowhere but someone's laptop.
 The snapshot is therefore **derived, never maintained**:
 
 - Migrations are the source of truth. The snapshot is a build artifact
-- Never hand-edit the snapshot. Regenerate it with `server/scripts/schema-dump.sh` (not created yet),
+- Never hand-edit the snapshot. Regenerate it with `server/scripts/schema-dump.sh`,
   which replays every migration against an empty database and dumps the result
 - A new migration is not finished until the snapshot is regenerated in the same change
 - The snapshot carries its `flyway_schema_history` rows, so a snapshot-built database already knows
@@ -202,12 +202,12 @@ Scope answers *where in the repo*, not *what feature*. Closed list — extend on
 
 ### 4.1 `server/` — Spring Boot + Java 21 + PostgreSQL
 
-Built with Maven. Flyway migrations. Build: `./mvnw verify`, run: `./mvnw spring-boot:run`. Base package: `com.<pkg>.server` (not chosen yet).
+Built with Maven. Flyway migrations. Build: `./mvnw verify`, run: `./mvnw spring-boot:run`. Base package: `com.chap.server`.
 
 #### Package Layout
 
 ```
-com.<pkg>.server
+com.chap.server
 ├── controller    @RestController — HTTP only
 ├── service       @Service — business logic
 ├── repository    @Repository / JpaRepository — DB access only
