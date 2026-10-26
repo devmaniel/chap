@@ -1,6 +1,6 @@
 ---
 doc: spec
-status: draft
+status: approved
 sources:
   - docs/PRD.md
   - AGENTS.md
