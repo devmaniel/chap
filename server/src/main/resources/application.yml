@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: server
+  # Local secrets (GEMINI_API_KEY, ELEVENLABS_API_KEY, ...) from server/.env,
+  # which git ignores. Real environment variables still win.
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5434/chap}
+    username: ${DB_USER:chap}
+    password: ${DB_PASSWORD:chap}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  # Reply photos: the 5 MB per-photo rule is checked by ChatService so it
+  # answers invalid_image; these only stop absurd uploads early.
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+# AI providers. Empty means "not configured": the server still starts and only
+# the features that need a key report themselves unavailable.
+chap:
+  gemini:
+    api-key: ${GEMINI_API_KEY:}
+    model: ${GEMINI_MODEL:gemini-2.5-flash}
+  elevenlabs:
+    api-key: ${ELEVENLABS_API_KEY:}
+    agent-id: ${ELEVENLABS_AGENT_ID:}
+  # Signs session tokens. The default is for local development only:
+  # set JWT_SECRET (32+ characters) anywhere real.
+  jwt:
+    secret: ${JWT_SECRET:local-development-only-secret-change-me}

@@ -1,0 +1,15 @@
+# Local development database only. Credentials are not secrets.
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: chap
+      POSTGRES_USER: chap
+      POSTGRES_PASSWORD: chap
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
